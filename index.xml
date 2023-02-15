@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title></title>
+    <link>/</link>
+    <description>Recent content on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Feb 2023 10:53:49 +1100</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Wed, 15 Feb 2023 11:15:39 +1100</pubDate>
+      
+      <guid>/about/</guid>
+      <description>rust-bitcoin refers to the GitHub rust-bitcoin organization and also to the main repository (and Rust crate) within that organization.
+The rust-bitcoin crate is a library that supports the Bitcoin network protocol and associated primitives. It is designed for Rust programs built to work with the Bitcoin network.
+Crates The rust-bitcoin organization includes a number of repositories containing various Rust crates that you may find useful when writing Rust code that interacts with the Bitcoin network.</description>
+    </item>
+    
+    <item>
+      <title>Hello</title>
+      <link>/blog/hello/</link>
+      <pubDate>Wed, 15 Feb 2023 10:53:49 +1100</pubDate>
+      
+      <guid>/blog/hello/</guid>
+      <description>&lt;p&gt;Hello from the rust-bitcoin devs.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
