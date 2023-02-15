@@ -1,3 +1,4 @@
-# Rust Bitcoin CookBook
+# rust-bitcoin
 
-Welcome to the Rust-Bitcoin documentation! This documentation is designed to provide readers with a comprehensive understanding of Rust-Bitcoin and its key features.
+This is the website for the [rust-bitcoin](https://github.com/rust-bitcoin) GitHub organization. The
+[source code](https://github.com/tcharding/www.rust-bitcoin.org) is open and PRs are welcome.
