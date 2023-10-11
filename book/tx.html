@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Rust Bitcoin Cookbook</title>
+        <title>Constructing and Signing Transactions - Rust Bitcoin Cookbook</title>
 
 
         <!-- Custom HTML head -->
@@ -80,7 +80,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html" class="active">Introduction</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">1.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">1.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">1.2.</strong> Taproot</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="tx.html" class="active"><strong aria-hidden="true">1.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">1.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">1.2.</strong> Taproot</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -141,44 +141,22 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="rust-bitcoin"><a class="header" href="#rust-bitcoin">Rust Bitcoin</a></h1>
-<p><a href="https://creativecommons.org/publicdomain/zero/1.0/"><img src="https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg" alt="CC0 1.0" /></a></p>
-<p><a href="https://github.com/rust-bitcoin/rust-bitcoin"><code>rust-bitcoin</code></a> is a library for working with Bitcoin in Rust.
-It contains Bitcoin network protocol and associated primitives.
-You can find more by reading the <a href="https://docs.rs/bitcoin">documentation</a>.</p>
-<p>To add <code>rust-bitcoin</code> to your project, run:</p>
-<pre><code class="language-bash">cargo add bitcoin
-</code></pre>
-<p>Additionally, you can add flags to enable features.
-Here's an example:</p>
-<pre><code class="language-bash">cargo add bitcoin --features=rand-std
-</code></pre>
-<p>This cookbook provides straightforward examples that showcase effective approaches
-for accomplishing typical Bitcoin-related programming tasks,
-and utilizing the Rust ecosystem's crates.</p>
-<p>The book covers various topics, including receiving data over P2P,
-parsing blocks and transactions,
-and constructing and signing transactions.</p>
-<h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
-<p>This book contains:</p>
-<ol>
-<li><a href="tx.html">Constructing and Signing Transactions</a>
-<ol>
-<li><a href="tx_segwit-v0.html">SegWit V0</a></li>
-<li><a href="tx_taproot.html">Taproot</a></li>
-</ol>
-</li>
-</ol>
-<h2 id="license"><a class="header" href="#license">License</a></h2>
-<p>This website is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal (CC0 1.0) Public Domain Dedication</a>.</p>
-<p><a href="https://creativecommons.org/publicdomain/zero/1.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/88x31.png" alt="CC BY-SA 4.0" /></a></p>
+                        <h1 id="constructing-and-signing-transactions"><a class="header" href="#constructing-and-signing-transactions">Constructing and Signing Transactions</a></h1>
+<p>We provide the following examples:</p>
+<ul>
+<li><a href="tx_segwit-v0.html">Constructing and Signing Transactions - SegWit V0</a></li>
+<li><a href="tx_taproot.html">Constructing and Signing Transactions - Taproot</a></li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next" href="tx.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="tx_segwit-v0.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -188,8 +166,11 @@ and constructing and signing transactions.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next" href="tx.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="tx_segwit-v0.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

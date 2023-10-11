@@ -9,12 +9,11 @@ Release 0.30.0 is out! | rust-bitcoin
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.115.0">
 
 
 <link rel="canonical" href="/blog/release-0.30.0/" >
-<link href="/sass/main.min.54c0387e824717d9b39eaf75492f7016a1193974a3bdf5c8a427d72c5b2bbaa7.css" rel="stylesheet">
-
+<link href="/sass/main.min.4e3efe637d21e3743f006dbceaa8d8f10952bb4f4d19989c58c5afb0fc120a52.css" rel="stylesheet">
 
 
 </head>
@@ -29,8 +28,6 @@ Release 0.30.0 is out! | rust-bitcoin
                 <span class="terminal">dev@rust-bitcoin.org ~ $</span>
             </a>
         </div>
-        <input class="side-menu" type="checkbox" id="side-menu"/>
-        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
         <nav class="headerLinks">
             <ul>
                 
@@ -60,22 +57,6 @@ Release 0.30.0 is out! | rust-bitcoin
                 
 <div class="postWrapper">
     <h1>Release 0.30.0 is out!</h1>
-    <section class="postMetadata">
-        <dl>
-            
-            
-            
-            
-                <dt>published</dt>
-                
-                <dd><time datetime="2023-03-21">March 21, 2023</time></dd>
-            
-            
-                <dt>reading time</dt>
-                <dd>7 minutes</dd>
-            
-        </dl>
-    </section>
     <div>
         <p><code>rust-bitcoin</code> <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/index.html">version 0.30.0</a> is out now.</p>
 <p>This is a rather large release so we decided to write an update guide for you guys. If this guide is
@@ -107,11 +88,11 @@ please get them into us now so your needs can be met.</p>
 <li>Replace <code>TapBranchHash</code> with <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/taproot/struct.TapNodeHash.html"><code>TapNodeHash</code></a></li>
 <li>Change <code>hash_newtype!(FooHash, sha256::Hash, 32, doc=&quot;A hash of foo.&quot;);</code> to:</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">hash_newtype<span style="color:#f92672">!</span> {
-    <span style="color:#e6db74">/// A hash of foo.
-</span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">FooHash</span>(sha256::Hash);
-}
-</code></pre></div><ol start="11">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>hash_newtype! {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// A hash of foo.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">FooHash</span>(sha256::Hash);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="11">
 <li>Fix outstanding compiler errors, if any</li>
 <li>Optimize the code: replace occurrences of <code>&amp;ScriptBuf</code> with <code>Script</code>, remove allocations&hellip;</li>
 <li>Remove useless conversions <code>LockTime</code> -&gt; <code>LockTime</code> (clippy has a lint for it)</li>
@@ -267,10 +248,11 @@ Tobin (and the rust-bitcoin devs).</p>
 
 
         <footer class="footer">
-    
-        <span>License CC-01 , Built with <a href="https://gohugo.io" class="footerLink">Hugo</a> and <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme</span>
-    
+    © 2023 rust-bitcoin, Built with
+    <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+    <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
 </footer>
+
     </div>
 
 </body>
