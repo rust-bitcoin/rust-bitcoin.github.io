@@ -1,20 +1,23 @@
-# Rust Bitcoin
+# Introduction
 
-[`rust-bitcoin`](https://github.com/rust-bitcoin/rust-bitcoin) is a library for working with Bitcoin in Rust.
-It contains Bitcoin network protocol and associated primitives.
-You can find more by reading the [documentation](https://docs.rs/bitcoin).
+This book is created and maintained by those involved in the
+[`rust-bitcoin`](https://github.com/rust-bitcoin) GitHub organization, contributions are
+appreciated. It covers various crates from the org and as such, aims to be useful to developers
+wanting to write code in Rust that interacts with the Bitcoin network. It is specifically not
+limited to just the [`rust-bitcoin`](https://github.com/rust-bitcoin/rust-bitcoin) crate, although
+that is a good starting point if you want a one-stop-shop for interacting with Bitcoin in Rust.
 
-This cookbook provides straightforward examples that showcase effective approaches
-for accomplishing typical Bitcoin-related programming tasks,
-and utilizing the Rust ecosystem's crates.
+There are a number of good libraries outside of the `rust-bitcoin` organization that use the crates
+covered here, two that you might like to check out are:
 
-The book covers various topics, including receiving data over P2P,
-parsing blocks and transactions,
-and constructing and signing transactions.
+- [`Bitcoin Dev Kit`](https://bitcoindevkit.org/)
+- [`Lightning Dev Kit`](https://lightningdevkit.org/)
+
+Finally, this book is currently a work inn progress but hopes to eventually cover various topics,
+including parsing blocks and transactions, constructing and signing transactions, receiving data
+over the peer-to-peer network, plus fun stuff you can do with miniscript.
 
 ## Table of Contents
-
-This book contains:
 
 1. [Getting Started](getting_started.md)
 1. [Constructing and Signing Transactions](tx.md)
