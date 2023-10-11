@@ -1,7 +1,5 @@
 # Rust Bitcoin
 
-[![CC0 1.0][cc-shield]][cc]
-
 [`rust-bitcoin`](https://github.com/rust-bitcoin/rust-bitcoin) is a library for working with Bitcoin in Rust.
 It contains Bitcoin network protocol and associated primitives.
 You can find more by reading the [documentation](https://docs.rs/bitcoin).
