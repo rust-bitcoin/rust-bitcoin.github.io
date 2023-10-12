@@ -1,0 +1,9 @@
+[package]
+name = "tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+doc-comment = "0.3"
+bitcoin = { version = "0.30", features = ["std", "rand-std"] }

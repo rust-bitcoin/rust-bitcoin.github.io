@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+
+<head>
+    <title>
+        Home | {{ .Site.Params.author }}
+    </title>
+
+    {{ partial "head.html" . }}
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        {{ partial "header.html" . }}
+
+        <div class="content vertical">
+            <main class="main">
+                <div class="indexWrapper">
+                    <div>
+                        <img src="rust-bitcoin.png" alt="rust-bitcoin logo">
+                    </div>
+                    <div>
+                        <h1 class="indexHeader">{{ .Site.Params.author }}</h1>
+                    </div>
+                    {{ partial "social.html" . }}
+                </div>
+            </main>
+        </div>
+
+
+        {{ partial "footer.html" . }}
+    </div>
+
+</body>
+
+</html>

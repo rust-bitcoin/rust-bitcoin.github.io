@@ -1,0 +1,17 @@
+[book]
+authors = [
+    "Harshil Jani <harshiljani2002@gmail.com>",
+    "Tobin C. Harding<me@tobin.cc>",
+    "Einherjar <realeinherjar@proton.me>",
+]
+language = "en"
+multilingual = false
+src = "src"
+title = "Rust Bitcoin Cookbook"
+description = "A cookbook for Rust Bitcoin development"
+
+[rust]
+edition = "2021"
+
+[output.html.playground]
+runnable = false # playground is not runnable by default

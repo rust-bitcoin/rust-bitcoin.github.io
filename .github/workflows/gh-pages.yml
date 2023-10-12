@@ -1,0 +1,45 @@
+# This needs the following setting:
+# Setttings > Actions > General > Workflow permissions
+# change to "Read and write permissions"
+name: github pages
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: null
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true # could be useful in the future
+          fetch-depth: 0   # we just need the latest commit
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v1
+        with:
+          mdbook-version: 'latest'
+
+      - name: Build mdbook
+        working-directory: ./cookbook
+        run: mdbook build --dest-dir "../site/static/book"
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "latest"
+          extended: true
+
+      - name: Build Hugo
+        working-directory: ./site
+        run: hugo --minify
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site/public

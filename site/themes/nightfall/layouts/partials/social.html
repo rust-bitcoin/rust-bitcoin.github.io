@@ -1,0 +1,9 @@
+<div class="socialNavbar">
+    <ul>
+        {{ range sort .Site.Params.social "key"}}
+        <li>
+            <a href="{{ .url | safeURL }}">{{ .name }}</a>
+        </li>
+        {{ end }}
+    </ul>
+</div>

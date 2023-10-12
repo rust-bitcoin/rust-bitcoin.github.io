@@ -1,0 +1,17 @@
+@import "./global";
+
+// utils
+@import "./utils/variables";
+@import "./utils/fonts";
+
+// components
+@import "./components/footer";
+@import "./components/header";
+@import "./components/post";
+@import "./components/social";
+
+// pages
+@import "./pages/single";
+@import "./pages/list";
+@import "./pages/index";
+@import "./pages/baseof";

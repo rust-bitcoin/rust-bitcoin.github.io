@@ -1,0 +1,12 @@
+# .gitignore for www.rust-bitcoin.org
+
+# web build
+site/public
+site/.hugo_build.lock
+
+# mdbook build
+cookbook/book
+cookbook/tests/Cargo.lock
+cookbook/tests/target
+cookbook/tests/src
+site/static/book

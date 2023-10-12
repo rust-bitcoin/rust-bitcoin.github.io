@@ -1,0 +1,20 @@
+<header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="/">
+                <span class="terminal">{{ .Site.Params.user }}@{{ .Site.Params.hostname }} ~ $</span>
+            </a>
+        </div>
+        <nav class="headerLinks">
+            <ul>
+                {{ range .Site.Menus.header }}
+                <li>
+                    <a href="{{ .URL | absURL }}" title="{{ .Title }}" >
+                        ~/{{- .Name -}}
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </nav>
+    </div>
+</header>

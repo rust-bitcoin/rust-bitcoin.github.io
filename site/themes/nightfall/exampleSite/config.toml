@@ -1,0 +1,38 @@
+baseURL = 'http://gohugo.io/'
+languageCode = 'en-us'
+theme = "hugo-theme-nightfall"
+
+[menu]
+  [[menu.header]]
+    name = "blog"
+    weight = 0
+    url = "blog"
+  [[menu.header]]
+    name = "about"
+    weight = 1
+    url = "about"
+
+[params]
+author = "Hugo Nightfall"
+user = "hello"
+hostname = "gohugo.io"
+
+[[params.social]]
+key = 0
+name = "github"
+url = "https://github.com/gohugoio"
+
+[[params.social]]
+key = 1
+name = "twitter"
+url = "https://www.example.com"
+
+[[params.social]]
+key = 2
+name = "linkedin"
+url = "https://www.example.com"
+
+[[params.social]]
+key = 3
+name = "email"
+url = "mailto:email@example.com"

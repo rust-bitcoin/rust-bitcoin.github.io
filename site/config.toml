@@ -1,0 +1,38 @@
+baseURL = '/'
+languageCode = 'en-us'
+theme = "nightfall"
+
+[menu]
+  [[menu.header]]
+    name = "blog"
+    weight = 0
+    url = "blog"
+  [[menu.header]]
+    name = "cookbook"
+    weight = 2
+    url = "book"
+  [[menu.header]]
+    name = "about"
+    weight = 1
+    url = "about"
+
+[params]
+author = "rust-bitcoin"
+user = "dev"
+hostname = "rust-bitcoin.org"
+footerHTML = 'License CC-01 , Built with <a href="https://gohugo.io" class="footerLink">Hugo</a> and <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme'
+
+[[params.social]]
+key = 0
+name = "secp256k1"
+url = "https://github.com/rust-bitcoin/rust-secp256k1"
+
+[[params.social]]
+key = 1
+name = "bitcoin"
+url = "https://github.com/rust-bitcoin/rust-bitcoin"
+
+[[params.social]]
+key = 1
+name = "miniscript"
+url = "https://github.com/rust-bitcoin/rust-miniscript"
