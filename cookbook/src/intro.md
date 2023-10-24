@@ -4,19 +4,6 @@
 It contains Bitcoin network protocol and associated primitives.
 You can find more by reading the [documentation](https://docs.rs/bitcoin).
 
-To add `rust-bitcoin` to your project, run:
-
-```bash
-cargo add bitcoin
-```
-
-Additionally, you can add flags to enable features.
-Here's an example:
-
-```bash
-cargo add bitcoin --features=rand-std
-```
-
 This cookbook provides straightforward examples that showcase effective approaches
 for accomplishing typical Bitcoin-related programming tasks,
 and utilizing the Rust ecosystem's crates.
@@ -29,6 +16,7 @@ and constructing and signing transactions.
 
 This book contains:
 
+1. [Getting Started](getting_started.md)
 1. [Constructing and Signing Transactions](tx.md)
     1. [SegWit V0](tx_segwit-v0.md)
     1. [Taproot](tx_taproot.md)
