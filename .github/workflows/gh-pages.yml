@@ -1,6 +1,3 @@
-# This needs the following setting:
-# Setttings > Actions > General > Workflow permissions
-# change to "Read and write permissions"
 name: github pages
 
 on:
