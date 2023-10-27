@@ -1,36 +1,25 @@
-# Rust Bitcoin
+# Introduction
 
-[![CC0 1.0][cc-shield]][cc]
+This book is created and maintained by those involved in the
+[`rust-bitcoin`](https://github.com/rust-bitcoin) GitHub organization, contributions are
+appreciated. It covers various crates from the org and as such, aims to be useful to developers
+wanting to write code in Rust that interacts with the Bitcoin network. It is specifically not
+limited to just the [`rust-bitcoin`](https://github.com/rust-bitcoin/rust-bitcoin) crate, although
+that is a good starting point if you want a one-stop-shop for interacting with Bitcoin in Rust.
 
-[`rust-bitcoin`](https://github.com/rust-bitcoin/rust-bitcoin) is a library for working with Bitcoin in Rust.
-It contains Bitcoin network protocol and associated primitives.
-You can find more by reading the [documentation](https://docs.rs/bitcoin).
+There are a number of good libraries outside of the `rust-bitcoin` organization that use the crates
+covered here, two that you might like to check out are:
 
-To add `rust-bitcoin` to your project, run:
+- [`Bitcoin Dev Kit`](https://bitcoindevkit.org/)
+- [`Lightning Dev Kit`](https://lightningdevkit.org/)
 
-```bash
-cargo add bitcoin
-```
-
-Additionally, you can add flags to enable features.
-Here's an example:
-
-```bash
-cargo add bitcoin --features=rand-std
-```
-
-This cookbook provides straightforward examples that showcase effective approaches
-for accomplishing typical Bitcoin-related programming tasks,
-and utilizing the Rust ecosystem's crates.
-
-The book covers various topics, including receiving data over P2P,
-parsing blocks and transactions,
-and constructing and signing transactions.
+Finally, this book is currently a work inn progress but hopes to eventually cover various topics,
+including parsing blocks and transactions, constructing and signing transactions, receiving data
+over the peer-to-peer network, plus fun stuff you can do with miniscript.
 
 ## Table of Contents
 
-This book contains:
-
+1. [Getting Started](getting_started.md)
 1. [Constructing and Signing Transactions](tx.md)
     1. [SegWit V0](tx_segwit-v0.md)
     1. [Taproot](tx_taproot.md)
