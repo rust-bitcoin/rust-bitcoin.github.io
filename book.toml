@@ -1,6 +1,0 @@
-[book]
-authors = ["Harshil Jani"]
-language = "en"
-multilingual = false
-src = "src"
-title = "Rust Bitcoin Cookbook"

@@ -1,260 +1,71 @@
-<!DOCTYPE html>
-<html lang="en-us">
-
-<head>
-    <title>
-Release 0.30.0 is out! | rust-bitcoin
-</title>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="generator" content="Hugo 0.115.0">
-
-
-<link rel="canonical" href="/blog/release-0.30.0/" >
-<link href="/sass/main.min.4e3efe637d21e3743f006dbceaa8d8f10952bb4f4d19989c58c5afb0fc120a52.css" rel="stylesheet">
-
-
-</head>
-
-<body>
-
-    <div class="flexWrapper">
-        <header class="headerWrapper">
-    <div class="header">
-        <div>
-            <a href="/">
-                <span class="terminal">dev@rust-bitcoin.org ~ $</span>
-            </a>
-        </div>
-        <nav class="headerLinks">
-            <ul>
-                
-                <li>
-                    <a href="/about" title="" >
-                        ~/about</a>
-                </li>
-                
-                <li>
-                    <a href="/book" title="" >
-                        ~/cookbook</a>
-                </li>
-                
-                <li>
-                    <a href="/blog" title="" >
-                        ~/blog</a>
-                </li>
-                
-            </ul>
-        </nav>
-    </div>
-</header>
-
-
-        <div class="content">
-            <main class="main">
-                
-<div class="postWrapper">
-    <h1>Release 0.30.0 is out!</h1>
-    <div>
-        <p><code>rust-bitcoin</code> <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/index.html">version 0.30.0</a> is out now.</p>
-<p>This is a rather large release so we decided to write an update guide for you guys. If this guide is
-not useful or lacking in some way please do let us know so we can do better.</p>
-<p>First a little excuse for why this is going to be so painful. We try to deprecate things when we
-make API breaking changes, using</p>
-<pre><code> #[deprecated(since = &quot;x.y.z&quot;, note = &quot;use foobar instead&quot;)]
-</code></pre>
-<p>This allows us to give you a hint on how to upgrade by way of the compiler. The problem we hit was
+<!doctype html><html lang=en-us><head><title>Release 0.30.0 is out! | rust-bitcoin</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=generator content="Hugo 0.119.0"><link rel=canonical href=/blog/release-0.30.0/><link href=/sass/main.min.4e3efe637d21e3743f006dbceaa8d8f10952bb4f4d19989c58c5afb0fc120a52.css rel=stylesheet></head><body><div class=flexWrapper><header class=headerWrapper><div class=header><div><a href=/><span class=terminal>dev@rust-bitcoin.org ~ $</span></a></div><nav class=headerLinks><ul><li><a href=/about title>~/about</a></li><li><a href=/book title>~/cookbook</a></li><li><a href=/blog title>~/blog</a></li></ul></nav></div></header><div class=content><main class=main><div class=postWrapper><h1>Release 0.30.0 is out!</h1><div><p><code>rust-bitcoin</code> <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/index.html>version 0.30.0</a> is out now.</p><p>This is a rather large release so we decided to write an update guide for you guys. If this guide is
+not useful or lacking in some way please do let us know so we can do better.</p><p>First a little excuse for why this is going to be so painful. We try to deprecate things when we
+make API breaking changes, using</p><pre><code> #[deprecated(since = &quot;x.y.z&quot;, note = &quot;use foobar instead&quot;)]
+</code></pre><p>This allows us to give you a hint on how to upgrade by way of the compiler. The problem we hit was
 that its not always possible to deprecate things (e.g. changing arguments to a function) so under
 the cover of &ldquo;this is a pre-1.0 release&rdquo; and with the aim of pushing kind of fast so we can get to
 the 1.0 release, we got a bit sloppy with deprecation this release - sorry about that. We are very
 much trying to get to a place where we can commit to our APIs and stabilize the codebase, that is
 the primary goal of development at the moment. If you have API changing suggestions or requests
-please get them into us now so your needs can be met.</p>
-<p>Without further ado, here is the upgrade guide. Enjoy!</p>
-<h2 id="suggested-steps">Suggested steps</h2>
-<p>We suggest that you take these steps when upgrading:</p>
-<ol start="0">
-<li>Make sure to update other dependency versions in <code>Cargo.toml</code> if you use them explicitly: <code>bitcoin_hashes</code> to 0.12.0, <code>secp256k1</code> to 0.27.0</li>
-<li>Remove all occurrences of <code>util::</code> referring to our crate</li>
-<li>Replace <code>Script</code> with <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/script/struct.ScriptBuf.html"><code>ScriptBuf</code></a> (<code>s/\([^A-Za-z0-9]\)Script\([^A-Za-z0-9]\)/\1ScriptBuf\2/g</code> should work in most cases)</li>
-<li>Replace instances of <code>.parse::&lt;Address&gt;()</code> with <code>.parse::&lt;Address&lt;_&gt;&gt;()</code></li>
-<li>Call <code>require_network(network)</code> on parsed addresses (you&rsquo;ll get no method found for <code>Address&lt;NetworkUnchecked&gt;</code> errors)</li>
-<li>Replace <code>locktime</code> with <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/locktime/absolute/index.html"><code>locktime::absolute</code></a></li>
-<li>Replace <code>PackedLockTime</code> with just <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/locktime/absolute/struct.LockTime.html"><code>LockTime</code></a></li>
-<li>Import key types from the <code>key</code> submodule rather than <code>schnorr</code> or <code>ecdsa</code></li>
-<li>Replace <code>SchnorrSighashType</code> with <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/sighash/struct.TapSighashType.html"><code>TapSighashType</code></a></li>
-<li>Replace <code>TapBranchHash</code> with <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/taproot/struct.TapNodeHash.html"><code>TapNodeHash</code></a></li>
-<li>Change <code>hash_newtype!(FooHash, sha256::Hash, 32, doc=&quot;A hash of foo.&quot;);</code> to:</li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>hash_newtype! {
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// A hash of foo.
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">FooHash</span>(sha256::Hash);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><ol start="11">
-<li>Fix outstanding compiler errors, if any</li>
-<li>Optimize the code: replace occurrences of <code>&amp;ScriptBuf</code> with <code>Script</code>, remove allocations&hellip;</li>
-<li>Remove useless conversions <code>LockTime</code> -&gt; <code>LockTime</code> (clippy has a lint for it)</li>
-</ol>
-<p>These steps should get you most of the way - see &ldquo;Renames&rdquo; section below also.</p>
-<h2 id="re-exports">Re-exports</h2>
-<p>We are trying to separate the API from the directory structure, as part of this we are attempting to
+please get them into us now so your needs can be met.</p><p>Without further ado, here is the upgrade guide. Enjoy!</p><h2 id=suggested-steps>Suggested steps</h2><p>We suggest that you take these steps when upgrading:</p><ol start=0><li>Make sure to update other dependency versions in <code>Cargo.toml</code> if you use them explicitly: <code>bitcoin_hashes</code> to 0.12.0, <code>secp256k1</code> to 0.27.0</li><li>Remove all occurrences of <code>util::</code> referring to our crate</li><li>Replace <code>Script</code> with <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/script/struct.ScriptBuf.html><code>ScriptBuf</code></a> (<code>s/\([^A-Za-z0-9]\)Script\([^A-Za-z0-9]\)/\1ScriptBuf\2/g</code> should work in most cases)</li><li>Replace instances of <code>.parse::&lt;Address>()</code> with <code>.parse::&lt;Address&lt;_>>()</code></li><li>Call <code>require_network(network)</code> on parsed addresses (you&rsquo;ll get no method found for <code>Address&lt;NetworkUnchecked></code> errors)</li><li>Replace <code>locktime</code> with <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/locktime/absolute/index.html><code>locktime::absolute</code></a></li><li>Replace <code>PackedLockTime</code> with just <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/locktime/absolute/struct.LockTime.html><code>LockTime</code></a></li><li>Import key types from the <code>key</code> submodule rather than <code>schnorr</code> or <code>ecdsa</code></li><li>Replace <code>SchnorrSighashType</code> with <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/sighash/struct.TapSighashType.html><code>TapSighashType</code></a></li><li>Replace <code>TapBranchHash</code> with <a href=https://docs.rs/bitcoin/0.30.0/bitcoin/taproot/struct.TapNodeHash.html><code>TapNodeHash</code></a></li><li>Change <code>hash_newtype!(FooHash, sha256::Hash, 32, doc="A hash of foo.");</code> to:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>hash_newtype! {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>/// A hash of foo.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span>    <span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>FooHash</span>(sha256::Hash);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ol start=11><li>Fix outstanding compiler errors, if any</li><li>Optimize the code: replace occurrences of <code>&amp;ScriptBuf</code> with <code>Script</code>, remove allocations&mldr;</li><li>Remove useless conversions <code>LockTime</code> -> <code>LockTime</code> (clippy has a lint for it)</li></ol><p>These steps should get you most of the way - see &ldquo;Renames&rdquo; section below also.</p><h2 id=re-exports>Re-exports</h2><p>We are trying to separate the API from the directory structure, as part of this we are attempting to
 only re-export from the crate root types that exist in the standard Bitcoin vernacular i.e., for
 pubkey you can <code>use bitcoin::PublicKey</code> but to get an x-only pubkey you need to go to the <code>key</code>
-module <code>use bitcoin::key::XOnlyPublicKey</code>.</p>
-<p>Please note this is still work-in-progress, suggestions welcome.</p>
-<h2 id="code-moves">Code moves</h2>
-<p>We moved <em>a lot</em> of stuff around. This was a precursor to crate smashing which we have now started.
+module <code>use bitcoin::key::XOnlyPublicKey</code>.</p><p>Please note this is still work-in-progress, suggestions welcome.</p><h2 id=code-moves>Code moves</h2><p>We moved <em>a lot</em> of stuff around. This was a precursor to crate smashing which we have now started.
 Hopefully things are in intuitive places, it might be useful to take a quick look at the new
-module structure to get a feel for things, specifically:</p>
-<ul>
-<li>
-<p>We have a workspace now! The main crate now lives in <code>bitcoin/</code>. The <code>bitcoin_hashes</code> repository
-has been merged into the <code>rust-bitcoin</code> repository and now lives under <code>hashes/</code>.</p>
-</li>
-<li>
-<p>The <code>util</code> module is all but gone, try just removing <code>util::</code> at first, most modules are
-re-exported at the crate root.</p>
-</li>
-<li>
-<p>Cryptography related stuff can now primarily be found in 4 modules (<code>ecdsa</code>, <code>taproot</code>, <code>sighash</code>,
+module structure to get a feel for things, specifically:</p><ul><li><p>We have a workspace now! The main crate now lives in <code>bitcoin/</code>. The <code>bitcoin_hashes</code> repository
+has been merged into the <code>rust-bitcoin</code> repository and now lives under <code>hashes/</code>.</p></li><li><p>The <code>util</code> module is all but gone, try just removing <code>util::</code> at first, most modules are
+re-exported at the crate root.</p></li><li><p>Cryptography related stuff can now primarily be found in 4 modules (<code>ecdsa</code>, <code>taproot</code>, <code>sighash</code>,
 <code>key</code>). We have started to break ECDSA stuff up into legacy and segwit v0 where it is cleaner but
-this is still work-in-progress.</p>
-</li>
-<li>
-<p>Some hash wrapper types are now to be found in the module that they are used in e.g.,
+this is still work-in-progress.</p></li><li><p>Some hash wrapper types are now to be found in the module that they are used in e.g.,
 <code>TapLeafHash</code> is in the <code>taproot</code> module. Others are still in <code>hash_types</code> but the re-exports now
 conform to the aim stated above so you might need to add <code>hash_types::</code> to your paths for the more
-esoteric hash types.</p>
-</li>
-</ul>
-<h2 id="script-changes">Script changes</h2>
-<p>To optimize efficiency of working with borrowed scripts we renamed <code>Script</code> to <code>ScriptBuf</code> and added
+esoteric hash types.</p></li></ul><h2 id=script-changes>Script changes</h2><p>To optimize efficiency of working with borrowed scripts we renamed <code>Script</code> to <code>ScriptBuf</code> and added
 an unsized <code>Script</code>. It works just like <code>PathBuf</code> and <code>Path</code> (and other such types) from <code>std</code>. The
 API tries to resemble those types as much as reasonable (deref coercions etc.), so it should be
 intuitive. Methods in the library that previously took <code>&amp;Script</code> (which is now <code>ScriptBuf</code>) take the
-unsized <code>&amp;Script</code> now.</p>
-<p>Additionally, we changed the type accepted by the <code>push_slice</code> method to be another unsized newtype:
+unsized <code>&amp;Script</code> now.</p><p>Additionally, we changed the type accepted by the <code>push_slice</code> method to be another unsized newtype:
 <code>PushBytes</code> and it&rsquo;s owned counterpart <code>PushBytesBuf</code>. These types maintain the invariant of storing
 at most 2^32-1 bytes - the maximum one can push into script. Previously the method would panic if
 you attempted to do it (and it wasn&rsquo;t documented, sorry about that). Now you can either handle it
 explicitly using <code>TryFrom</code> or just pass a known-length array (implemented for arrays up to 73
-bytes).</p>
-<p>Types that are commonly pushed into script (serialized signatures, public keys&hellip;) implement
-<code>AsRef&lt;PushBytes&gt;</code> so you can pass those directly as well. You can also implement <code>AsRef</code> for your
-types so they can be pushed directly.</p>
-<h2 id="taproot-changes">Taproot changes</h2>
-<p>Since the introduction of Taproot support the API got &ldquo;stress tested&rdquo; and various issues were
+bytes).</p><p>Types that are commonly pushed into script (serialized signatures, public keys&mldr;) implement
+<code>AsRef&lt;PushBytes></code> so you can pass those directly as well. You can also implement <code>AsRef</code> for your
+types so they can be pushed directly.</p><h2 id=taproot-changes>Taproot changes</h2><p>Since the introduction of Taproot support the API got &ldquo;stress tested&rdquo; and various issues were
 uncovered and fixed. One of them is that the name &ldquo;Branch Hash&rdquo; refers to the algorithm being used
 to compute the value but the resulting value is actually a node in the tree. Thus we renamed
 <code>TapBranchHash</code> to <code>TapNodeHash</code> to reflect this. Additionally we originally used raw
 <code>sha256::Hashes</code> for node hashes which was error-prone and annoying because of manual conversions.
-We changed them to use <code>TapNodeHash</code> instead.</p>
-<p>When writing smart contracts that have their taproot trees statically known it was annoying to use
+We changed them to use <code>TapNodeHash</code> instead.</p><p>When writing smart contracts that have their taproot trees statically known it was annoying to use
 <code>TaprootMerkleBranch::try_from</code> for arrays that are statically known to be shorter than 128. We&rsquo;ve
-added <code>From</code> conversion for these.</p>
-<p><code>NodeInfo</code> got some improvements too. For trees that are statically guaranteed to not have hidden
+added <code>From</code> conversion for these.</p><p><code>NodeInfo</code> got some improvements too. For trees that are statically guaranteed to not have hidden
 nodes we have <code>TapTree</code> type and both got methods for getting an iterator over their respective
 items. This also improved our code internally, fixing some bugs and decreasing the risk of other
-bugs. We have some additional ideas to improve it further.</p>
-<p>Some types that do not have a well-defined serialization in the Bitcoin ecosystem or are purely Rust
+bugs. We have some additional ideas to improve it further.</p><p>Some types that do not have a well-defined serialization in the Bitcoin ecosystem or are purely Rust
 constructs (e.g. builders) got serde support removed. Serializing these would be error-prone and
-difficult to support stably. You can instead (de)serialize other types and convert them.</p>
-<p>Overall, these changes should make working with Taproot less error-prone and more ergonomic. Taproot
+difficult to support stably. You can instead (de)serialize other types and convert them.</p><p>Overall, these changes should make working with Taproot less error-prone and more ergonomic. Taproot
 is still young technology so it&rsquo;s possible there will be more changes in the future as new users try
-out the API. Please let us know if you have questions or suggestions.</p>
-<h2 id="sighash">Sighash</h2>
-<p>We moved around and renamed a bunch of types to do with sighashes. In the <code>sighash</code> module, along
-with the <code>SighashCache</code> we now have the hopefully clearly named:</p>
-<ul>
-<li><code>LegacySighash</code></li>
-<li><code>SegwitV0Sighash</code></li>
-<li><code>TapSighash</code></li>
-<li><code>EcdsaSighashType</code></li>
-<li><code>TapSighashType</code></li>
-</ul>
-<p>Signatures are now in their respective modules (<code>ecdsa</code> for legacy and segwit v0):</p>
-<ul>
-<li><code>taproot::Signature</code></li>
-<li><code>ecdsa::Signature</code></li>
-</ul>
-<h2 id="lock-types">Lock types</h2>
-<p>There are now two lock times, one for absolute locks (CLTV) and one for relative locks (CSV). We
+out the API. Please let us know if you have questions or suggestions.</p><h2 id=sighash>Sighash</h2><p>We moved around and renamed a bunch of types to do with sighashes. In the <code>sighash</code> module, along
+with the <code>SighashCache</code> we now have the hopefully clearly named:</p><ul><li><code>LegacySighash</code></li><li><code>SegwitV0Sighash</code></li><li><code>TapSighash</code></li><li><code>EcdsaSighashType</code></li><li><code>TapSighashType</code></li></ul><p>Signatures are now in their respective modules (<code>ecdsa</code> for legacy and segwit v0):</p><ul><li><code>taproot::Signature</code></li><li><code>ecdsa::Signature</code></li></ul><h2 id=lock-types>Lock types</h2><p>There are now two lock times, one for absolute locks (CLTV) and one for relative locks (CSV). We
 export the <code>absolute</code> and <code>relative</code> modules at the crate root so you can either import them from
 there or <code>use bitcoin::locktime::{absolute, relative};</code> if that&rsquo;s clearer. We expect locks to be
-used as <code>absolute::LockTime</code>.</p>
-<h2 id="address-changes">Address changes</h2>
-<p>Bitcoin addresses for different networks are different, up until this release, when parsing an
+used as <code>absolute::LockTime</code>.</p><h2 id=address-changes>Address changes</h2><p>Bitcoin addresses for different networks are different, up until this release, when parsing an
 address from a string, a check that the address format matched up to the expected network (e.g. &ldquo;bc1&rdquo;
 prefix for Bitcoin mainnet segwit addresses) was available but easy to forget. We&rsquo;ve attempted to
-improve the API to make such omissions harder.</p>
-<p>Now <code>Address&lt;V&gt;</code> includes a generic that is used as a marker for whether the address has been
-checked as valid for a particular network, we have <code>Address&lt;NetworkChecked&gt;</code> and
-<code>Address&lt;NetworkUnchecked&gt;</code>, defaulting to <code>NetworkChecked</code>. Because of the default some uses will
-just keep working but you should be aware that <code>Address</code> now means <code>Address&lt;NetworkChecked&gt;</code>. The
-string parsing functions return types as expected. See the docs on <code>Address</code> for more information.</p>
-<h2 id="newtypes">Newtypes</h2>
-<p>This is a non-exhaustive list of newtypes added this release:</p>
-<ul>
-<li><code>relative::LockTime</code></li>
-<li><code>relative::Height</code></li>
-<li><code>relative::Time</code></li>
-<li><code>ecdsa::SerializedSignature</code></li>
-<li><code>ScriptBuf</code></li>
-<li><code>PushBytes</code> / <code>PushBytesBuf</code></li>
-<li><code>Target</code></li>
-<li><code>CompactTarget</code></li>
-<li><code>Work</code></li>
-</ul>
-<h3 id="renames">Renames</h3>
-<p>This is a non-exhaustive list of types renamed in this release:</p>
-<ul>
-<li><code>Script</code> -&gt; <code>ScriptBuf</code></li>
-<li><code>locktime::LockTime</code> -&gt; <code>locktime::absolute::LockTime</code></li>
-<li><code>locktime::Time</code> -&gt; <code>locktime::absolute::Time</code></li>
-<li><code>locktime::Height</code> -&gt; <code>locktime::absolute::Height</code></li>
-<li><code>TapBranchHash</code> / <code>TapLeafHash</code> -&gt; <code>TapNodeHash</code></li>
-<li><code>TapSighashHash</code> -&gt; <code>TapSighash</code></li>
-<li><code>SchnorrSighashtype</code> -&gt; <code>TapSighashType</code></li>
-<li><code>schnorr</code> -&gt; <code>taproot</code> (module rename)</li>
-<li>Various error types were renamed, we try to use <code>foo::Error</code> if there is a single error type in
-the <code>foo</code> module.</li>
-</ul>
-<h3 id="removed-types">Removed types</h3>
-<ul>
-<li><code>PackedLockTime</code></li>
-</ul>
-<p>This type was intended as an optimization of the absolute locktime using a <code>u32</code>, this turned out to
-be not such a great idea. Please note <code>absolute::LockTime</code> does not implement <code>Ord</code>.</p>
-<ul>
-<li><code>Uint256</code></li>
-</ul>
-<p>We changed the <code>Uint256</code> type to <code>U256</code> and made it private since it is not a general purpose
-integer type. Rather we wrapped it to create the <code>Work</code> and <code>Target</code> types.</p>
-<h2 id="final-thoughts">Final thoughts</h2>
-<p>I&rsquo;ve tried to give you some context on why so many changes. Hopefully the context makes the upgrade
+improve the API to make such omissions harder.</p><p>Now <code>Address&lt;V></code> includes a generic that is used as a marker for whether the address has been
+checked as valid for a particular network, we have <code>Address&lt;NetworkChecked></code> and
+<code>Address&lt;NetworkUnchecked></code>, defaulting to <code>NetworkChecked</code>. Because of the default some uses will
+just keep working but you should be aware that <code>Address</code> now means <code>Address&lt;NetworkChecked></code>. The
+string parsing functions return types as expected. See the docs on <code>Address</code> for more information.</p><h2 id=newtypes>Newtypes</h2><p>This is a non-exhaustive list of newtypes added this release:</p><ul><li><code>relative::LockTime</code></li><li><code>relative::Height</code></li><li><code>relative::Time</code></li><li><code>ecdsa::SerializedSignature</code></li><li><code>ScriptBuf</code></li><li><code>PushBytes</code> / <code>PushBytesBuf</code></li><li><code>Target</code></li><li><code>CompactTarget</code></li><li><code>Work</code></li></ul><h3 id=renames>Renames</h3><p>This is a non-exhaustive list of types renamed in this release:</p><ul><li><code>Script</code> -> <code>ScriptBuf</code></li><li><code>locktime::LockTime</code> -> <code>locktime::absolute::LockTime</code></li><li><code>locktime::Time</code> -> <code>locktime::absolute::Time</code></li><li><code>locktime::Height</code> -> <code>locktime::absolute::Height</code></li><li><code>TapBranchHash</code> / <code>TapLeafHash</code> -> <code>TapNodeHash</code></li><li><code>TapSighashHash</code> -> <code>TapSighash</code></li><li><code>SchnorrSighashtype</code> -> <code>TapSighashType</code></li><li><code>schnorr</code> -> <code>taproot</code> (module rename)</li><li>Various error types were renamed, we try to use <code>foo::Error</code> if there is a single error type in
+the <code>foo</code> module.</li></ul><h3 id=removed-types>Removed types</h3><ul><li><code>PackedLockTime</code></li></ul><p>This type was intended as an optimization of the absolute locktime using a <code>u32</code>, this turned out to
+be not such a great idea. Please note <code>absolute::LockTime</code> does not implement <code>Ord</code>.</p><ul><li><code>Uint256</code></li></ul><p>We changed the <code>Uint256</code> type to <code>U256</code> and made it private since it is not a general purpose
+integer type. Rather we wrapped it to create the <code>Work</code> and <code>Target</code> types.</p><h2 id=final-thoughts>Final thoughts</h2><p>I&rsquo;ve tried to give you some context on why so many changes. Hopefully the context makes the upgrade
 path easier and helps to clarify the direction we are pushing in at the moment. As always,
 contributions are most welcome, issues, PRs, and even just ideas. We are here to provide the best
 crate we can for devs wishing to interact with the Bitcoin network in Rust, feedback from your
-usecase helps us a lot, help us out so we can help you.</p>
-<p>Thanks,<br>
-Tobin (and the rust-bitcoin devs).</p>
-    </div>
-</div>
-
-            </main>
-        </div>
-
-
-        <footer class="footer">
-    © 2023 rust-bitcoin, Built with
-    <a href="https://gohugo.io" class="footerLink">Hugo</a> and
-    <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
-</footer>
-
-    </div>
-
-</body>
-
-</html>
+usecase helps us a lot, help us out so we can help you.</p><p>Thanks,<br>Tobin (and the rust-bitcoin devs).</p></div></div></main></div><footer class=footer>© 2023 rust-bitcoin, Built with
+<a href=https://gohugo.io class=footerLink>Hugo</a> and
+<a href=https://github.com/LordMathis/hugo-theme-nightfall class=footerLink>Nightfall</a> theme</footer></div></body></html>
