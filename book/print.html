@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">1.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">1.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">1.2.</strong> Taproot</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -172,27 +172,25 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="rust-bitcoin"><a class="header" href="#rust-bitcoin">Rust Bitcoin</a></h1>
-<p><a href="https://creativecommons.org/publicdomain/zero/1.0/"><img src="https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg" alt="CC0 1.0" /></a></p>
-<p><a href="https://github.com/rust-bitcoin/rust-bitcoin"><code>rust-bitcoin</code></a> is a library for working with Bitcoin in Rust.
-It contains Bitcoin network protocol and associated primitives.
-You can find more by reading the <a href="https://docs.rs/bitcoin">documentation</a>.</p>
-<p>To add <code>rust-bitcoin</code> to your project, run:</p>
-<pre><code class="language-bash">cargo add bitcoin
-</code></pre>
-<p>Additionally, you can add flags to enable features.
-Here's an example:</p>
-<pre><code class="language-bash">cargo add bitcoin --features=rand-std
-</code></pre>
-<p>This cookbook provides straightforward examples that showcase effective approaches
-for accomplishing typical Bitcoin-related programming tasks,
-and utilizing the Rust ecosystem's crates.</p>
-<p>The book covers various topics, including receiving data over P2P,
-parsing blocks and transactions,
-and constructing and signing transactions.</p>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>This book is created and maintained by those involved in the
+<a href="https://github.com/rust-bitcoin"><code>rust-bitcoin</code></a> GitHub organization, contributions are
+appreciated. It covers various crates from the org and as such, aims to be useful to developers
+wanting to write code in Rust that interacts with the Bitcoin network. It is specifically not
+limited to just the <a href="https://github.com/rust-bitcoin/rust-bitcoin"><code>rust-bitcoin</code></a> crate, although
+that is a good starting point if you want a one-stop-shop for interacting with Bitcoin in Rust.</p>
+<p>There are a number of good libraries outside of the <code>rust-bitcoin</code> organization that use the crates
+covered here, two that you might like to check out are:</p>
+<ul>
+<li><a href="https://bitcoindevkit.org/"><code>Bitcoin Dev Kit</code></a></li>
+<li><a href="https://lightningdevkit.org/"><code>Lightning Dev Kit</code></a></li>
+</ul>
+<p>Finally, this book is currently a work inn progress but hopes to eventually cover various topics,
+including parsing blocks and transactions, constructing and signing transactions, receiving data
+over the peer-to-peer network, plus fun stuff you can do with miniscript.</p>
 <h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
-<p>This book contains:</p>
 <ol>
+<li><a href="getting_started.html">Getting Started</a></li>
 <li><a href="tx.html">Constructing and Signing Transactions</a>
 <ol>
 <li><a href="tx_segwit-v0.html">SegWit V0</a></li>
@@ -203,6 +201,13 @@ and constructing and signing transactions.</p>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>This website is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal (CC0 1.0) Public Domain Dedication</a>.</p>
 <p><a href="https://creativecommons.org/publicdomain/zero/1.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/88x31.png" alt="CC BY-SA 4.0" /></a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>To add <code>rust-bitcoin</code> to your project, run:</p>
+<pre><code class="language-bash">cargo add bitcoin
+</code></pre>
+<p>If you are just exploring you probably want to use the &quot;rand-std&quot; feature so you can generate random keys:</p>
+<pre><code class="language-bash">cargo add bitcoin --features=rand-std
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="constructing-and-signing-transactions"><a class="header" href="#constructing-and-signing-transactions">Constructing and Signing Transactions</a></h1>
 <p>We provide the following examples:</p>
 <ul>
