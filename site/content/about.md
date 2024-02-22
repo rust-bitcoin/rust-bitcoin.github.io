@@ -46,3 +46,5 @@ Currently rust-bitcoin is used by a number of projects, including:
   cross-platform Bitcoin wallets without worrying about bitcoin internals.
 - [Lightning Dev Kit (LDK)](https://github.com/lightningdevkit): A library that allows you to build a
   lightning node without worrying about implementing low-level lightning logic correctly.
+- [Fedimint](https://github.com/fedimint): Federated chaumian e-cash on Bitcoin.
+- [Mutiny Wallet](https://github.com/MutinyWallet): Mutiny is a self-custodial lightning wallet that runs in the browser.
