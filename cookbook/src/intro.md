@@ -13,7 +13,7 @@ covered here, two that you might like to check out are:
 - [`Bitcoin Dev Kit`](https://bitcoindevkit.org/)
 - [`Lightning Dev Kit`](https://lightningdevkit.org/)
 
-Finally, this book is currently a work inn progress but hopes to eventually cover various topics,
+Finally, this book is currently a work in progress but hopes to eventually cover various topics,
 including parsing blocks and transactions, constructing and signing transactions, receiving data
 over the peer-to-peer network, plus fun stuff you can do with miniscript.
 
