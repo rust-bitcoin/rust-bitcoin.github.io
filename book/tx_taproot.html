@@ -90,7 +90,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html" class="active"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -174,7 +176,7 @@
                         <h1 id="constructing-and-signing-transactions---taproot"><a class="header" href="#constructing-and-signing-transactions---taproot">Constructing and Signing Transactions - Taproot</a></h1>
 <p>In this section, we will construct a <a href="https://bitcoinops.org/en/topics/taproot/">Taproot transaction</a>.</p>
 <p>This is the <code>cargo</code> commands that you need to run this example:</p>
-<pre><code class="language-bash">cargo add bitcoin --features &quot;std, rand-std&quot;
+<pre><code class="language-bash">cargo add bitcoin --features "std, rand-std"
 </code></pre>
 <p>First we'll need to import the following:</p>
 <pre><code class="language-rust">use std::str::FromStr;
@@ -224,14 +226,14 @@ This is used to indicate that is an instance of <code>Secp256k1</code> and can b
 <pre><code class="language-rust"><span class="boring">use std::str::FromStr;
 </span><span class="boring">use bitcoin::{Address, Network};
 </span>fn receivers_address() -&gt; Address {
-    Address::from_str(&quot;bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va&quot;)
-        .expect(&quot;a valid address&quot;)
+    Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+        .expect("a valid address")
         .require_network(Network::Bitcoin)
-        .expect(&quot;valid address for mainnet&quot;)
+        .expect("valid address for mainnet")
 }</code></pre>
 <p><code>receivers_address</code> generates a receiver address.
 In a real application this would be the address of the receiver.
-We use the method <code>Address::from_str</code> to parse the string <code>&quot;bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va&quot;</code><sup class="footnote-reference"><a href="#arbitrary_address">4</a></sup> into an address.
+We use the method <code>Address::from_str</code> to parse the string <code>"bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va"</code><sup class="footnote-reference"><a href="#arbitrary_address">4</a></sup> into an address.
 Hence, it is necessary to import the <code>std::str::FromStr</code> trait.
 Note that <code>bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va</code> is a <a href="https://bitcoinops.org/en/topics/bech32/">Bech32</a> address.
 This is an arbitrary, however valid, Bitcoin mainnet address.
@@ -303,10 +305,10 @@ Finally, we return the tuple <code>(out_point, utxo)</code>.</p>
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">fn receivers_address() -&gt; Address {
-</span><span class="boring">    Address::from_str(&quot;bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va&quot;)
-</span><span class="boring">        .expect(&quot;a valid address&quot;)
+</span><span class="boring">    Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+</span><span class="boring">        .expect("a valid address")
 </span><span class="boring">        .require_network(Network::Bitcoin)
-</span><span class="boring">        .expect(&quot;valid address for mainnet&quot;)
+</span><span class="boring">        .expect("valid address for mainnet")
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">fn dummy_unspent_transaction_output&lt;C: Verification&gt;(
@@ -371,7 +373,7 @@ fn main() {
     let mut sighash_cache = SighashCache::new(unsigned_tx);
     let sighash = sighash_cache
         .taproot_signature_hash(0, &amp;prevouts, None, None, TapSighashType::Default)
-        .expect(&quot;valid sighash&quot;);
+        .expect("valid sighash");
     let tweaked: TweakedKeyPair = keypair.tap_tweak(&amp;secp, None);
     let msg = Message::from(sighash);
     let sig = secp.sign_schnorr(&amp;msg, &amp;tweaked.to_inner());
@@ -384,7 +386,7 @@ fn main() {
     witness.push(sig.as_ref());
 
     // Print the transaction ready to broadcast
-    println!(&quot;tx: {tx:?}&quot;);
+    println!("tx: {tx:?}");
 }</code></pre>
 <p>Let's go over the main function code block by block.</p>
 <p><code>let secp = Secp256k1::new();</code> creates a new <code>Secp256k1</code> context with all capabilities.

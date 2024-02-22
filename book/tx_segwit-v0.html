@@ -90,7 +90,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html" class="active"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -175,7 +177,7 @@
 <p>In this section, we will construct a <a href="https://bitcoinops.org/en/topics/segregated-witness/">SegWit V0 transaction</a>.
 This is the most common type of transaction on the Bitcoin network today<sup class="footnote-reference"><a href="#today">1</a></sup>.</p>
 <p>This is the <code>cargo</code> commands that you need to run this example:</p>
-<pre><code class="language-bash">cargo add bitcoin --features &quot;std, rand-std&quot;
+<pre><code class="language-bash">cargo add bitcoin --features "std, rand-std"
 </code></pre>
 <p>First we'll need to import the following:</p>
 <pre><code class="language-rust">use std::str::FromStr;
@@ -212,7 +214,7 @@ const CHANGE_AMOUNT: u64 = 14_999_000; // 1000 sat fee.</code></pre>
 </span>fn senders_keys&lt;C: Signing&gt;(secp: &amp;Secp256k1&lt;C&gt;) -&gt; (SecretKey, WPubkeyHash) {
     let sk = SecretKey::new(&amp;mut rand::thread_rng());
     let pk = bitcoin::PublicKey::new(sk.public_key(secp));
-    let wpkh = pk.wpubkey_hash().expect(&quot;key is compressed&quot;);
+    let wpkh = pk.wpubkey_hash().expect("key is compressed");
 
     (sk, wpkh)
 }</code></pre>
@@ -228,14 +230,14 @@ We conclude returning the private key <code>sk</code> and the public key hash <c
 <pre><code class="language-rust"><span class="boring">use std::str::FromStr;
 </span><span class="boring">use bitcoin::{Address, Network};
 </span>fn receivers_address() -&gt; Address {
-    Address::from_str(&quot;bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf&quot;)
-        .expect(&quot;a valid address&quot;)
+    Address::from_str("bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf")
+        .expect("a valid address")
         .require_network(Network::Bitcoin)
-        .expect(&quot;valid address for mainnet&quot;)
+        .expect("valid address for mainnet")
 }</code></pre>
 <p><code>receivers_address</code> generates a receiver address.
 In a real application this would be the address of the receiver.
-We use the method <code>Address::from_str</code> to parse the string <code>&quot;bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf&quot;</code> into an address.
+We use the method <code>Address::from_str</code> to parse the string <code>"bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf"</code> into an address.
 Hence, it is necessary to import the <code>std::str::FromStr</code> trait.
 Note that <code>bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf</code> is a <a href="https://bitcoinops.org/en/topics/bech32/">Bech32</a> address.
 This is an arbitrary, however valid, Bitcoin mainnet address.
@@ -282,17 +284,17 @@ Finally, we return the tuple <code>(out_point, utxo)</code>.</p>
 </span><span class="boring">fn senders_keys&lt;C: Signing&gt;(secp: &amp;Secp256k1&lt;C&gt;) -&gt; (SecretKey, WPubkeyHash) {
 </span><span class="boring">    let sk = SecretKey::new(&amp;mut rand::thread_rng());
 </span><span class="boring">    let pk = bitcoin::PublicKey::new(sk.public_key(secp));
-</span><span class="boring">    let wpkh = pk.wpubkey_hash().expect(&quot;key is compressed&quot;);
+</span><span class="boring">    let wpkh = pk.wpubkey_hash().expect("key is compressed");
 </span><span class="boring">
 </span><span class="boring">    (sk, wpkh)
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">
 </span><span class="boring">fn receivers_address() -&gt; Address {
-</span><span class="boring">    Address::from_str(&quot;bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf&quot;)
-</span><span class="boring">        .expect(&quot;a valid address&quot;)
+</span><span class="boring">    Address::from_str("bc1q7cyrfmck2ffu2ud3rn5l5a8yv6f0chkp0zpemf")
+</span><span class="boring">        .expect("a valid address")
 </span><span class="boring">        .require_network(Network::Bitcoin)
-</span><span class="boring">        .expect(&quot;valid address for mainnet&quot;)
+</span><span class="boring">        .expect("valid address for mainnet")
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">fn dummy_unspent_transaction_output(wpkh: &amp;WPubkeyHash) -&gt; (OutPoint, TxOut) {
@@ -321,7 +323,7 @@ fn main() {
     let script_code = dummy_utxo
         .script_pubkey
         .p2wpkh_script_code()
-        .expect(&quot;valid script&quot;);
+        .expect("valid script");
 
     // The input for the transaction we are constructing.
     let input = TxIn {
@@ -355,7 +357,7 @@ fn main() {
     let mut sighash_cache = SighashCache::new(unsigned_tx);
     let sighash = sighash_cache
         .segwit_signature_hash(0, &amp;script_code, DUMMY_UTXO_AMOUNT, EcdsaSighashType::All)
-        .expect(&quot;valid sighash&quot;);
+        .expect("valid sighash");
     let msg = Message::from(sighash);
     let sig = secp.sign_ecdsa(&amp;msg, &amp;sk);
 
@@ -372,7 +374,7 @@ fn main() {
     witness.push(&amp;pk.serialize());
 
     // Print the transaction ready to broadcast
-    println!(&quot;tx: {tx:?}&quot;);
+    println!("tx: {tx:?}");
 }</code></pre>
 <p>Let's go over the main function code block by block.</p>
 <p><code>let secp = Secp256k1::new();</code> creates a new <code>Secp256k1</code> context with all capabilities.
@@ -382,7 +384,7 @@ we can use the <a href="https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp25
 <code>let address = receivers_address();</code> generates a receiver's address <code>address</code>.
 <code>let (dummy_out_point, dummy_utxo) = dummy_unspent_transaction_output(&amp;wpkh);</code> generates a dummy unspent transaction output <code>dummy_utxo</code> and its corresponding outpoint <code>dummy_out_point</code>.
 All of these are helper functions that we defined earlier.</p>
-<p><code>let script_code = dummy_utxo.script_pubkey.p2wpkh_script_code().expect(&quot;valid script&quot;);</code>
+<p><code>let script_code = dummy_utxo.script_pubkey.p2wpkh_script_code().expect("valid script");</code>
 creates the script code required to spend a P2WPKH output.
 Since <code>dummy_utxo</code> is a <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/blockdata/transaction/struct.TxOut.html"><code>TxOut</code></a> type,
 we can access the underlying public field <code>script_pubkey</code> which, in turn is a <a href="https://docs.rs/bitcoin/0.30.0/bitcoin/blockdata/script/struct.Script.html"><code>Script</code></a> type.
@@ -473,8 +475,8 @@ This transaction is now ready to be broadcast to the Bitcoin network.</p>
 <!-- markdown-link-check-disable -->
 <div class="footnote-definition" id="today"><sup class="footnote-definition-label">1</sup>
 <p>mid-2023.</p>
-<!-- markdown-link-check-enable -->
 </div>
+<!-- markdown-link-check-enable -->
 <div class="footnote-definition" id="change"><sup class="footnote-definition-label">2</sup>
 <p>Please note that the <code>CHANGE_AMOUNT</code> is not the same as the <code>DUMMY_UTXO_AMOUNT</code> minus the <code>SPEND_AMOUNT</code>.
 This is due to the fact that we need to pay a fee for the transaction.</p>
@@ -491,7 +493,7 @@ library implementing various cryptographic functions using the <a href="https://
 </div>
 <div class="footnote-definition" id="spend"><sup class="footnote-definition-label">5</sup>
 <p>And also we are locking the output to an address that we control:
-the <code>wpkh</code> public key hash that we generated earlier. </p>
+the <code>wpkh</code> public key hash that we generated earlier.</p>
 </div>
 
                     </main>
