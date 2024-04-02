@@ -1,4 +1,4 @@
-# .gitignore for www.rust-bitcoin.org
+# .gitignore for rust-bitcoin.github.io
 
 # web build
 site/public

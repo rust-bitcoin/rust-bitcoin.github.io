@@ -1,4 +1,4 @@
-# Website source for `www.rust-bitcoin.org`
+# Website source for `https://rust-bitcoin.org`
 
 While the website is deployed at rust-bitcoin.org there are still missing parts such as the cookbook.
 We will be happy to receive contributions adding interesting examples.
