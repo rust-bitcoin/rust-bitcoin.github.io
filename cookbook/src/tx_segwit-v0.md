@@ -108,7 +108,7 @@ fn dummy_unspent_transaction_output(wpkh: &WPubkeyHash) -> (OutPoint, TxOut) {
 ```
 
 `dummy_unspent_transaction_output` generates a dummy unspent transaction output (UTXO).
-This is a SegWit V0 P2WPKH (`ScriptBuf::new_v0_p2wpkh`) UTXO with a dummy invalid transaction ID (`txid: Txid::all_zeros()`),
+This is a SegWit V0 P2WPKH (`ScriptBuf::new_p2wpkh`) UTXO with a dummy invalid transaction ID (`txid: Txid::all_zeros()`),
 and a value of the `const DUMMY_UTXO_AMOUNT` that we defined earlier.
 We are using the [`OutPoint`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the transaction output.
 Finally, we return the tuple `(out_point, utxo)`.
@@ -209,10 +209,10 @@ fn main() {
 
     // Sign the sighash using the secp256k1 library (exported by rust-bitcoin).
     let msg = Message::from(sighash);
-    let sig = secp.sign_ecdsa(&msg, &sk);
+    let signature = secp.sign_ecdsa(&msg, &sk);
 
     // Update the witness stack.
-    let signature = bitcoin::ecdsa::Signature { sig, hash_ty: EcdsaSighashType::All };
+    let signature = bitcoin::ecdsa::Signature { signature, sighash_type };
     let pk = sk.public_key(&secp);
     *sighasher.witness_mut(input_index).unwrap() = Witness::p2wpkh(&signature, &pk);
 
@@ -264,7 +264,7 @@ Inside the [`TxOut`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transactio
 
 In `let change = TxOut {...}` we are instantiating the change output.
 It is very similar to the `spend` output, but we are now using the `const CHANGE_AMOUNT` that we defined earlier[^spend].
-This is done by setting the `script_pubkey` field to [`ScriptBuf::new_v0_p2wpkh(&wpkh)`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_v0_p2wpkh),
+This is done by setting the `script_pubkey` field to [`ScriptBuf::new_p2wpkh(&wpkh)`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2wpkh),
 which generates P2WPKH-type of script pubkey.
 
 In `let unsigned_tx = Transaction {...}` we are instantiating the transaction we want to sign and broadcast using the [`Transaction`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html) struct.
