@@ -651,8 +651,8 @@ Finally, we return the tuple <code>(out_point, utxo)</code>.</p>
 </span><span class="boring">use bitcoin::sighash::{Prevouts, SighashCache, TapSighashType};
 </span><span class="boring">use bitcoin::{
 </span><span class="boring">    transaction, Address, Amount, Network, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut,
-</span>      Txid, Witness,
-<span class="boring">};
+</span><span class="boring">    Txid, Witness,
+</span><span class="boring">};
 </span><span class="boring">
 </span><span class="boring">const DUMMY_UTXO_AMOUNT: Amount = Amount::from_sat(20_000_000);
 </span><span class="boring">const SPEND_AMOUNT: Amount = Amount::from_sat(5_000_000);
