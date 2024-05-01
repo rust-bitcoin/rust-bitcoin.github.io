@@ -302,7 +302,7 @@ Hence we use the <code>require_network</code> method to ensure that the address 
     (out_point, utxo)
 }</code></pre>
 <p><code>dummy_unspent_transaction_output</code> generates a dummy unspent transaction output (UTXO).
-This is a SegWit V0 P2WPKH (<code>ScriptBuf::new_v0_p2wpkh</code>) UTXO with a dummy invalid transaction ID (<code>txid: Txid::all_zeros()</code>),
+This is a SegWit V0 P2WPKH (<code>ScriptBuf::new_p2wpkh</code>) UTXO with a dummy invalid transaction ID (<code>txid: Txid::all_zeros()</code>),
 and a value of the <code>const DUMMY_UTXO_AMOUNT</code> that we defined earlier.
 We are using the <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.OutPoint.html"><code>OutPoint</code></a> struct to represent the transaction output.
 Finally, we return the tuple <code>(out_point, utxo)</code>.</p>
@@ -400,10 +400,10 @@ fn main() {
 
     // Sign the sighash using the secp256k1 library (exported by rust-bitcoin).
     let msg = Message::from(sighash);
-    let sig = secp.sign_ecdsa(&amp;msg, &amp;sk);
+    let signature = secp.sign_ecdsa(&amp;msg, &amp;sk);
 
     // Update the witness stack.
-    let signature = bitcoin::ecdsa::Signature { sig, hash_ty: EcdsaSighashType::All };
+    let signature = bitcoin::ecdsa::Signature { signature, sighash_type };
     let pk = sk.public_key(&amp;secp);
     *sighasher.witness_mut(input_index).unwrap() = Witness::p2wpkh(&amp;signature, &amp;pk);
 
@@ -449,7 +449,7 @@ This will lock the output to the receiver's address.</li>
 </ul>
 <p>In <code>let change = TxOut {...}</code> we are instantiating the change output.
 It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference"><a href="#spend">5</a></sup>.
-This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_v0_p2wpkh"><code>ScriptBuf::new_v0_p2wpkh(&amp;wpkh)</code></a>,
+This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2wpkh"><code>ScriptBuf::new_p2wpkh(&amp;wpkh)</code></a>,
 which generates P2WPKH-type of script pubkey.</p>
 <p>In <code>let unsigned_tx = Transaction {...}</code> we are instantiating the transaction we want to sign and broadcast using the <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a> struct.
 We set the following fields:</p>
@@ -609,7 +609,7 @@ Hence we use the <code>require_network</code> method to ensure that the address 
    secp: &amp;Secp256k1&lt;C&gt;,
    internal_key: UntweakedPublicKey,
 ) -&gt; (OutPoint, TxOut) {
-    let script_pubkey = ScriptBuf::new_v1_p2tr(secp, internal_key, None);
+    let script_pubkey = ScriptBuf::new_p2tr(secp, internal_key, None);
 
     let out_point = OutPoint {
         txid: Txid::all_zeros(), // Obviously invalid.
@@ -621,7 +621,7 @@ Hence we use the <code>require_network</code> method to ensure that the address 
     (out_point, utxo)
 }</code></pre>
 <p><code>dummy_unspent_transaction_output</code> generates a dummy unspent transaction output (UTXO).
-This is a P2TR (<code>ScriptBuf::new_v1_p2tr</code>) UTXO.
+This is a P2TR (<code>ScriptBuf::new_p2tr</code>) UTXO.
 It takes the following arguments:</p>
 <ul>
 <li><code>secp</code> is a reference to a <a href="https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html"><code>Secp256k1</code></a> type.
@@ -674,7 +674,7 @@ Finally, we return the tuple <code>(out_point, utxo)</code>.</p>
 </span><span class="boring">   secp: &amp;Secp256k1&lt;C&gt;,
 </span><span class="boring">   internal_key: UntweakedPublicKey,
 </span><span class="boring">) -&gt; (OutPoint, TxOut) {
-</span><span class="boring">    let script_pubkey = ScriptBuf::new_v1_p2tr(secp, internal_key, None);
+</span><span class="boring">    let script_pubkey = ScriptBuf::new_p2tr(secp, internal_key, None);
 </span><span class="boring">
 </span><span class="boring">    let out_point = OutPoint {
 </span><span class="boring">        txid: Txid::all_zeros(), // Obviously invalid.
@@ -740,10 +740,10 @@ fn main() {
     // Sign the sighash using the secp256k1 library (exported by rust-bitcoin).
     let tweaked: TweakedKeypair = keypair.tap_tweak(&amp;secp, None);
     let msg = Message::from_digest(sighash.to_byte_array());
-    let sig = secp.sign_schnorr(&amp;msg, &amp;tweaked.to_inner());
+    let signature = secp.sign_schnorr(&amp;msg, &amp;tweaked.to_inner());
 
     // Update the witness stack.
-    let signature = bitcoin::taproot::Signature { sig, hash_ty: sighash_type };
+    let signature = bitcoin::taproot::Signature { signature, sighash_type };
     sighasher.witness_mut(input_index).unwrap().push(&amp;signature.to_vec());
 
     // Get the signed transaction.
@@ -785,7 +785,7 @@ This will lock the output to the receiver's address.</li>
 </ul>
 <p>In <code>let change = TxOut {...}</code> we are instantiating the change output.
 It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference"><a href="#spend">5</a></sup>.
-This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_v1_p2tr"><code>ScriptBuf::new_v1_p2tr(...)</code></a>,
+This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr"><code>ScriptBuf::new_p2tr(...)</code></a>,
 which generates P2TR-type of script pubkey.</p>
 <p>In <code>let unsigned_tx = Transaction {...}</code> we are instantiating the transaction we want to sign and broadcast using the <a href="https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a> struct.
 We set the following fields:</p>
