@@ -144,7 +144,7 @@ Now we are ready for our main function that will sign a transaction that spends 
 # use bitcoin::sighash::{Prevouts, SighashCache, TapSighashType};
 # use bitcoin::{
 #     transaction, Address, Amount, Network, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut,
-      Txid, Witness,
+#     Txid, Witness,
 # };
 #
 # const DUMMY_UTXO_AMOUNT: Amount = Amount::from_sat(20_000_000);
