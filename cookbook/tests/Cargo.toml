@@ -6,4 +6,4 @@ publish = false
 
 [dependencies]
 doc-comment = "0.3"
-bitcoin = { version = "0.31", features = ["std", "rand-std"] }
+bitcoin = { version = "0.32", features = ["std", "rand-std"] }

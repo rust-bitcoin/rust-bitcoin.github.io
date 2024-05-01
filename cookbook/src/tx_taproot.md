@@ -97,7 +97,7 @@ fn dummy_unspent_transaction_output<C: Verification>(
    secp: &Secp256k1<C>,
    internal_key: UntweakedPublicKey,
 ) -> (OutPoint, TxOut) {
-    let script_pubkey = ScriptBuf::new_v1_p2tr(secp, internal_key, None);
+    let script_pubkey = ScriptBuf::new_p2tr(secp, internal_key, None);
 
     let out_point = OutPoint {
         txid: Txid::all_zeros(), // Obviously invalid.
@@ -111,7 +111,7 @@ fn dummy_unspent_transaction_output<C: Verification>(
 ```
 
 `dummy_unspent_transaction_output` generates a dummy unspent transaction output (UTXO).
-This is a P2TR (`ScriptBuf::new_v1_p2tr`) UTXO.
+This is a P2TR (`ScriptBuf::new_p2tr`) UTXO.
 It takes the following arguments:
 
 - `secp` is a reference to a [`Secp256k1`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html) type.
@@ -167,7 +167,7 @@ Now we are ready for our main function that will sign a transaction that spends 
 #    secp: &Secp256k1<C>,
 #    internal_key: UntweakedPublicKey,
 # ) -> (OutPoint, TxOut) {
-#     let script_pubkey = ScriptBuf::new_v1_p2tr(secp, internal_key, None);
+#     let script_pubkey = ScriptBuf::new_p2tr(secp, internal_key, None);
 # 
 #     let out_point = OutPoint {
 #         txid: Txid::all_zeros(), // Obviously invalid.
@@ -233,10 +233,10 @@ fn main() {
     // Sign the sighash using the secp256k1 library (exported by rust-bitcoin).
     let tweaked: TweakedKeypair = keypair.tap_tweak(&secp, None);
     let msg = Message::from_digest(sighash.to_byte_array());
-    let sig = secp.sign_schnorr(&msg, &tweaked.to_inner());
+    let signature = secp.sign_schnorr(&msg, &tweaked.to_inner());
 
     // Update the witness stack.
-    let signature = bitcoin::taproot::Signature { sig, hash_ty: sighash_type };
+    let signature = bitcoin::taproot::Signature { signature, sighash_type };
     sighasher.witness_mut(input_index).unwrap().push(&signature.to_vec());
 
     // Get the signed transaction.
@@ -283,7 +283,7 @@ Inside the [`TxOut`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transactio
 
 In `let change = TxOut {...}` we are instantiating the change output.
 It is very similar to the `spend` output, but we are now using the `const CHANGE_AMOUNT` that we defined earlier[^spend].
-This is done by setting the `script_pubkey` field to [`ScriptBuf::new_v1_p2tr(...)`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_v1_p2tr),
+This is done by setting the `script_pubkey` field to [`ScriptBuf::new_p2tr(...)`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr),
 which generates P2TR-type of script pubkey.
 
 In `let unsigned_tx = Transaction {...}` we are instantiating the transaction we want to sign and broadcast using the [`Transaction`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html) struct.
