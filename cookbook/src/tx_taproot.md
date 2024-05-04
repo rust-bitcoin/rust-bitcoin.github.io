@@ -132,7 +132,7 @@ We are using the latter, since we are not going to tweak the key.
 We are using the [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the transaction output.
 Finally, we return the tuple `(out_point, utxo)`.
 
-Now we are ready for our main function that will sign a transaction that spends a `p2wpkh` unspent output:
+Now we are ready for our main function that will sign a transaction that spends a `p2tr` unspent output:
 
 ```rust
 # use std::str::FromStr;
@@ -257,7 +257,7 @@ we can use the [`SecretKey::new`](https://docs.rs/secp256k1/0.27.0/secp256k1/str
 and `let (internal_key, _parity) = keypair.x_only_public_key();` generates a [`XOnlyPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.XOnlyPublicKey.html) that represent an X-only public key, used for verification of Schnorr signatures according to [BIP340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki).
 We won't be using second element from the returned tuple, the parity, so we are ignoring it by using the `_` underscore.
 `let address = receivers_address();` generates a receiver's address `address`.
-`let (dummy_out_point, dummy_utxo) = dummy_unspent_transaction_output(&wpkh);` generates a dummy unspent transaction output `dummy_utxo` and its corresponding outpoint `dummy_out_point`.
+`let (dummy_out_point, dummy_utxo) = dummy_unspent_transaction_output(&secp, internal_key);` generates a dummy unspent transaction output `dummy_utxo` and its corresponding outpoint `dummy_out_point`.
 All of these are helper functions that we defined earlier.
 
 In `let input = TxIn {...}` we are instantiating the input for the transaction we are constructing
