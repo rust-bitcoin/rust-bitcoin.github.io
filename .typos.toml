@@ -1,0 +1,16 @@
+[default]
+
+[default.extend-words]
+# NOTE: use here for false-positives
+# EXAMPLE: PSBT = "PSBT"
+
+[files]
+extend-exclude = ["site/themes/nightfall"]
+
+[type.gitignore]
+extend-glob = [".gitignore"]
+check-file = false
+
+[type.lock]
+extend-glob = ["*.lock"]
+check-file = false
