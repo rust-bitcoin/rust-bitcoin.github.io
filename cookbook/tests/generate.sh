@@ -7,7 +7,7 @@ cat << EOF > src/lib.rs
 extern crate doc_comment;
 EOF
 
-for doc in ../src/*.md
+for doc in ../src/**/*.md
 do
     NAME=$(basename $doc .md)
     NAME=${NAME//./_}
