@@ -1,0 +1,35 @@
+name: preview cookbook
+
+on:
+  pull_request: {}
+  workflow_dispatch: null
+
+jobs:
+  preview-cookbook:
+    runs-on: ubuntu-latest
+    permissions:
+      # For the comment in the PRs saying that the preview is ready.
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true # could be useful in the future
+          fetch-depth: 0   # we just need the latest commit
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
+
+      - name: Build mdbook
+        working-directory: ./cookbook
+        run: mdbook build
+
+      - name: Make preview available
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookbook-preview
+          path: ./cookbook/book
+          retention-days: 8
