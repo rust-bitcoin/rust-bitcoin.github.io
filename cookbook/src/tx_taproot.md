@@ -62,7 +62,7 @@ fn senders_keys<C: Signing>(secp: &Secp256k1<C>) -> Keypair {
 This will be useful to mock a sender.
 In a real application these would be actual secrets[^secp].
 We use the `SecretKey::new` method to generate a random private key `sk`.
-We then use the [`Keypair::from_secret_key`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/struct.Keypair.html#method.from_secret_key) method to instatiate a [`Keypair`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/struct.Keypair.html) type,
+We then use the [`Keypair::from_secret_key`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key) method to instatiate a [`Keypair`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html) type,
 which is a data structure that holds a keypair consisting of a secret and a public key.
 Note that `senders_keys` is generic over the [`Signing`](https://docs.rs/secp256k1/0.27.0/secp256k1/trait.Signing.html) trait.
 This is used to indicate that is an instance of `Secp256k1` and can be used for signing.
@@ -116,20 +116,20 @@ It takes the following arguments:
 
 - `secp` is a reference to a [`Secp256k1`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html) type.
    This is used to verify the internal key.
-- `internal_key` is a [`UntweakedPublicKey`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/type.UntweakedPublicKey.html) type.
+- `internal_key` is a [`UntweakedPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/type.UntweakedPublicKey.html) type.
    This is the internal key that is used to generate the script pubkey.
    It is untweaked, since we are not going to tweak the key.
-- `merkle_root` is an optional [`TapNodeHash`](https://docs.rs/bitcoin/0.31.1/bitcoin/taproot/struct.TapNodeHash.html) type.
+- `merkle_root` is an optional [`TapNodeHash`](https://docs.rs/bitcoin/0.32.0/bitcoin/taproot/struct.TapNodeHash.html) type.
    This is the merkle root of the taproot tree.
    Since we are not using a merkle tree, we are passing `None`.
 
-[`Verification`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/trait.Verification.html) is a trait that indicates that an instance of `Secp256k1` can be used for verification.
+[`Verification`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/trait.Verification.html) is a trait that indicates that an instance of `Secp256k1` can be used for verification.
 The UTXO has a dummy invalid transaction ID (`txid: Txid::all_zeros()`),
 and a value of the `const DUMMY_UTXO_AMOUNT` that we defined earlier.
-P2TR UTXOs could be tweaked ([`TweakedPublicKey`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/struct.TweakedPublicKey.html))
-or untweaked ([`UntweakedPublicKey`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/type.UntweakedPublicKey.html)).
+P2TR UTXOs could be tweaked ([`TweakedPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.TweakedPublicKey.html))
+or untweaked ([`UntweakedPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/type.UntweakedPublicKey.html)).
 We are using the latter, since we are not going to tweak the key.
-We are using the [`OutPoint`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the transaction output.
+We are using the [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the transaction output.
 Finally, we return the tuple `(out_point, utxo)`.
 
 Now we are ready for our main function that will sign a transaction that spends a `p2wpkh` unspent output:
@@ -254,46 +254,46 @@ Since we added the `rand-std` feature to our `Cargo.toml`,
 we can use the [`SecretKey::new`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html#method.new) method to generate a random private key `sk`.
 
 `let keypair = senders_keys(&secp);` generates a keypair that we control,
-and `let (internal_key, _parity) = keypair.x_only_public_key();` generates a [`XOnlyPublicKey`](https://docs.rs/bitcoin/0.31.1/bitcoin/key/struct.XOnlyPublicKey.html) that represent an X-only public key, used for verification of Schnorr signatures according to [BIP340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki).
+and `let (internal_key, _parity) = keypair.x_only_public_key();` generates a [`XOnlyPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.XOnlyPublicKey.html) that represent an X-only public key, used for verification of Schnorr signatures according to [BIP340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki).
 We won't be using second element from the returned tuple, the parity, so we are ignoring it by using the `_` underscore.
 `let address = receivers_address();` generates a receiver's address `address`.
 `let (dummy_out_point, dummy_utxo) = dummy_unspent_transaction_output(&wpkh);` generates a dummy unspent transaction output `dummy_utxo` and its corresponding outpoint `dummy_out_point`.
 All of these are helper functions that we defined earlier.
 
 In `let input = TxIn {...}` we are instantiating the input for the transaction we are constructing
-Inside the [`TxIn`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.TxIn.html) struct we are setting the following fields:
+Inside the [`TxIn`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxIn.html) struct we are setting the following fields:
 
-- `previous_output` is the outpoint of the dummy UTXO we are spending; it is a [`OutPoint`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.OutPoint.html) type.
-- `script_sig` is the script code required to spend an output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
-   We are instantiating a new empty script with [`ScriptBuf::new()`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new).
-- `sequence` is the sequence number; it is a [`Sequence`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Sequence.html) type.
-   We are using the [`ENABLE_RBF_NO_LOCKTIME`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Sequence.html#associatedconstant.ENABLE_RBF_NO_LOCKTIME) constant.
-- `witness` is the witness stack; it is a [`Witness`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/witness/struct.Witness.html) type.
-   We are using the [`default`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/witness/struct.Witness.html#impl-Default) method to create an empty witness that will be filled in later after signing.
+- `previous_output` is the outpoint of the dummy UTXO we are spending; it is a [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) type.
+- `script_sig` is the script code required to spend an output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
+   We are instantiating a new empty script with [`ScriptBuf::new()`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new).
+- `sequence` is the sequence number; it is a [`Sequence`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html) type.
+   We are using the [`ENABLE_RBF_NO_LOCKTIME`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html#associatedconstant.ENABLE_RBF_NO_LOCKTIME) constant.
+- `witness` is the witness stack; it is a [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html) type.
+   We are using the [`default`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#impl-Default) method to create an empty witness that will be filled in later after signing.
    This is possible because `Witness` implements the [`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) trait.
 
 In `let spend = TxOut {...}` we are instantiating the spend output.
-Inside the [`TxOut`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.TxOut.html) struct we are setting the following fields:
+Inside the [`TxOut`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxOut.html) struct we are setting the following fields:
 
 - `value` is the amount we are spending; it is a [`u64`](https://doc.rust-lang.org/std/primitive.u64.html) type.
    We are using the `const SPEND_AMOUNT` that we defined earlier.
-- `script_pubkey` is the script code required to spend a P2TR output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
-   We are using the [`script_pubkey`](https://docs.rs/bitcoin/0.31.1/bitcoin/address/struct.Address.html#method.script_pubkey) method to generate the script pubkey from the receivers address.
+- `script_pubkey` is the script code required to spend a P2TR output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
+   We are using the [`script_pubkey`](https://docs.rs/bitcoin/0.32.0/bitcoin/address/struct.Address.html#method.script_pubkey) method to generate the script pubkey from the receivers address.
    This will lock the output to the receiver's address.
 
 In `let change = TxOut {...}` we are instantiating the change output.
 It is very similar to the `spend` output, but we are now using the `const CHANGE_AMOUNT` that we defined earlier[^spend].
-This is done by setting the `script_pubkey` field to [`ScriptBuf::new_p2tr(...)`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr),
+This is done by setting the `script_pubkey` field to [`ScriptBuf::new_p2tr(...)`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr),
 which generates P2TR-type of script pubkey.
 
-In `let unsigned_tx = Transaction {...}` we are instantiating the transaction we want to sign and broadcast using the [`Transaction`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html) struct.
+In `let unsigned_tx = Transaction {...}` we are instantiating the transaction we want to sign and broadcast using the [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html) struct.
 We set the following fields:
 
 - `version` is the transaction version; it is a [`i32`](https://doc.rust-lang.org/std/primitive.u32.html) type.
    We are using version `2` which means that [BIP68](https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki) applies.
 - `lock_time` is the transaction lock time;
-   it is a [`LockTime`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/locktime/absolute/enum.LockTime.html) enum.
-   We are using the constant [`ZERO`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/locktime/absolute/enum.LockTime.html#associatedconstant.ZERO)
+   it is a [`LockTime`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/locktime/absolute/enum.LockTime.html) enum.
+   We are using the constant [`ZERO`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/locktime/absolute/enum.LockTime.html#associatedconstant.ZERO)
    This will make the transaction valid immediately.
 - `input` is the input vector; it is a [`Vec<TxIn>`](https://doc.rust-lang.org/std/vec/struct.Vec.html) type.
    We are using the `input` variable that we defined earlier wrapped in the [`vec!`](https://doc.rust-lang.org/std/macro.vec.html) macro for convenient initialization.
@@ -301,33 +301,33 @@ We set the following fields:
    We are using the `spend` and `change` variables that we defined earlier wrapped in the [`vec!`](https://doc.rust-lang.org/std/macro.vec.html) macro for convenient initialization.
 
 We need to reference the outputs of previous transactions in our transaction.
-We accomplish this with the [`Prevouts`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/enum.Prevouts.html) enum.
+We accomplish this with the [`Prevouts`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html) enum.
 In `let prevouts = vec![dummy_utxo];`,
-we create a vector of [`TxOut`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.TxOut.html) types that we want to reference.
+we create a vector of [`TxOut`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxOut.html) types that we want to reference.
 In our case, we only have one output, the `dummy_utxo` that we defined earlier.
-With `let prevouts = Prevouts::All(&prevouts);` we create a [`Prevouts::All`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/enum.Prevouts.html#variant.All) variant that takes a reference to a vector of [`TxOut`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.TxOut.html) types.
+With `let prevouts = Prevouts::All(&prevouts);` we create a [`Prevouts::All`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html#variant.All) variant that takes a reference to a vector of [`TxOut`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxOut.html) types.
 
-In `let mut sighash_cache = SighashCache::new(unsigned_tx);` we are instantiating a [`SighashCache`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/struct.SighashCache.html) struct.
+In `let mut sighash_cache = SighashCache::new(unsigned_tx);` we are instantiating a [`SighashCache`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html) struct.
 This is a type that efficiently calculates [signature hash message](https://developer.bitcoin.org/devguide/transactions.html?highlight=sighash_all#signature-hash-types) for legacy, segwit and taproot inputs.
 We are using the `new` method to instantiate the struct with the `unsigned_tx` that we defined earlier.
 `new` takes any `Borrow<Transaction>` as an argument.
 [`Borrow<T>`](https://doc.rust-lang.org/std/borrow/trait.Borrow.html) is a trait that allows us to pass either a reference to a `T` or a `T` itself.
 Hence, you can pass a `Transaction` or a `&Transaction` to `new`.
 
-`sighash_cache` is instantiated as mutable because we require a mutable reference when creating the sighash to sign using [`taproot_signature_hash`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/struct.SighashCache.html#method.taproot_signature_hash) to it.
+`sighash_cache` is instantiated as mutable because we require a mutable reference when creating the sighash to sign using [`taproot_signature_hash`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.taproot_signature_hash) to it.
 This computes the [BIP341](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki) sighash for any flag type.
 It takes the following arguments:
 
 - `input_index` is the index of the input we are signing; it is a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html) type.
    We are using `0` since we only have one input.
-- `&prevouts` is a refence to the [`Prevouts`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/enum.Prevouts.html) enum that we defined earlier.
+- `&prevouts` is a refence to the [`Prevouts`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html) enum that we defined earlier.
    This is used to reference the outputs of previous transactions and also used to calculate our transaction value.
 - `annex` is an optional argument that is used to pass the annex data.
    We are not using it, so we are passing `None`.
 - `leaf_hash_code_separator` is an optional argument that is used to pass the leaf hash code separator.
    We are not using it, so we are passing `None`.
-- `sighash_type` is the type of sighash; it is a [`TapSighashType`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/enum.TapSighashType.html) enum.
-   We are using the [`All`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/enum.TapSighashType.html#variant.All) variant,
+- `sighash_type` is the type of sighash; it is a [`TapSighashType`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.TapSighashType.html) enum.
+   We are using the [`All`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.TapSighashType.html#variant.All) variant,
    which indicates that the sighash will include all the inputs and outputs.
 
 Taproot signatures are generated by tweaking the private (and public) key(s).
@@ -341,11 +341,11 @@ We compute the signature `sig` by using the [`sign_schnorr`](https://docs.rs/sec
 It takes a refence to a [`Message`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Message.html) and a reference to a [`Keypair`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Keypair.html) as arguments,
 and returns a [`Signature`](https://docs.rs/secp256k1/0.27.0/secp256k1/ecdsa/struct.Signature.html) type.
 
-In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/transaction/struct.Transaction.html)
-by using the [`into_transaction`](https://docs.rs/bitcoin/0.31.1/bitcoin/sighash/struct.SighashCache.html#method.into_transaction) method.
+In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
+by using the [`into_transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction) method.
 We access the witness field of the first input with `tx.input[0].witness`.
-It is a [`Witness`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/witness/struct.Witness.html) type.
-We use the [`push`](https://docs.rs/bitcoin/0.31.1/bitcoin/blockdata/witness/struct.Witness.html#method.push) method
+It is a [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html) type.
+We use the [`push`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#method.push) method
 to push the serialized public and private Taproot keys.
 It expects a single argument of type `AsRef<[u8]>` which is a reference to a byte slice.
 We are using the [`as_ref`](https://doc.rust-lang.org/std/convert/trait.AsRef.html) method to convert the signature `sig` to a byte slice.

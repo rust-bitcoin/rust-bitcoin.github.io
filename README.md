@@ -10,7 +10,7 @@ find it missing please consider contributing an example or raising an issue.
 
 ## Current rust-bitcoin version
 
-This cookbook is currently based on [rust-bitcoin `v0.31.1`](https://docs.rs/bitcoin/0.31.1/bitcoin/index.html)
+This cookbook is currently based on [rust-bitcoin `v0.32.0`](https://docs.rs/bitcoin/0.32.0/bitcoin/index.html)
 
 ## License
 

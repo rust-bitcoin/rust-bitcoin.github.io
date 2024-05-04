@@ -6,7 +6,7 @@ Welcome to the `rust-bitcoin` cookbook!
 This cookbook is designed to provide readers with a
 comprehensive understanding of `rust-bitcoin` and its key features.
 
-Cookbook currently depends on `rust-bitcoin` version [`v0.31.1`](https://docs.rs/bitcoin/0.31.1/bitcoin/index.html).
+Cookbook currently depends on `rust-bitcoin` version [`v0.32.0`](https://docs.rs/bitcoin/0.32.0/bitcoin/index.html).
 This may not be the [latest available version](https://docs.rs/bitcoin) of `rust-bitcoin`.
 
 ## How to contribute
