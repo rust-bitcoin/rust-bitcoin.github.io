@@ -66,7 +66,7 @@ In a real application these would be actual secrets[^secp].
 We use the `SecretKey::new` method to generate a random private key `sk`.
 We then use the `PublicKey::new` method to derive the corresponding public key `pk`.
 Finally, we use the `PublicKey::wpubkey_hash` method to derive the corresponding public key hash `wpkh`.
-Note that `senders_keys` is generic over the [`Signing`](https://docs.rs/secp256k1/0.27.0/secp256k1/trait.Signing.html) trait.
+Note that `senders_keys` is generic over the [`Signing`](https://docs.rs/secp256k1/0.29.0/secp256k1/trait.Signing.html) trait.
 This is used to indicate that is an instance of `Secp256k1` and can be used for signing.
 We conclude returning the private key `sk` and the public key hash `wpkh` as a tuple.
 
@@ -228,7 +228,7 @@ Let's go over the main function code block by block.
 
 `let secp = Secp256k1::new();` creates a new `Secp256k1` context with all capabilities.
 Since we added the `rand-std` feature to our `Cargo.toml`,
-we can use the [`SecretKey::new`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html#method.new) method to generate a random private key `sk`.
+we can use the [`SecretKey::new`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.new) method to generate a random private key `sk`.
 
 `let (sk, wpkh) = senders_keys(&secp);` generates a random private key `sk` and derives the corresponding public key hash `wpkh`.
 `let address = receivers_address();` generates a receiver's address `address`.
@@ -302,13 +302,13 @@ It takes the following arguments:
    We are using the [`All`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.EcdsaSighashType.html#variant.All) variant,
    which indicates that the sighash will include all the inputs and outputs.
 
-We create the message `msg` by converting the `sighash` to a [`Message`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Message.html) type.
+We create the message `msg` by converting the `sighash` to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) type.
 This is the message that we will sign.
-The [Message::from](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.
+The [Message::from](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.
 
-We compute the signature `sig` by using the [`sign_ecdsa`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Secp256k1.html#method.sign_ecdsa) method.
-It takes a refence to a [`Message`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.Message.html) and a reference to a [`SecretKey`](https://docs.rs/secp256k1/0.27.0/secp256k1/struct.SecretKey.html) as arguments,
-and returns a [`Signature`](https://docs.rs/secp256k1/0.27.0/secp256k1/ecdsa/struct.Signature.html) type.
+We compute the signature `sig` by using the [`sign_ecdsa`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_ecdsa) method.
+It takes a refence to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`SecretKey`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.SecretKey.html) as arguments,
+and returns a [`Signature`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html) type.
 
 In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
 by using the [`into_transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction) method.
@@ -317,8 +317,8 @@ It is a [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/str
 We use the [`push_bitcoin_signature`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#method.push_bitcoin_signature) method.
 It expects two arguments:
 
-1. A reference to a [`SerializedSignature`](https://docs.rs/secp256k1/0.27.0/secp256k1/ecdsa/serialized_signature/struct.SerializedSignature.html) type.
-   This is accomplished by calling the [`serialize_der`](https://docs.rs/secp256k1/0.27.0/secp256k1/ecdsa/struct.Signature.html#method.serialize_der) method on the `Signature` `sig`,
+1. A reference to a [`SerializedSignature`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/serialized_signature/struct.SerializedSignature.html) type.
+   This is accomplished by calling the [`serialize_der`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html#method.serialize_der) method on the `Signature` `sig`,
    which returns a `SerializedSignature` type.
 1. A [`EcdsaSighashType`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.EcdsaSighashType.html) enum.
    Again we are using the same [`All`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.EcdsaSighashType.html#variant.All) variant that we used earlier.
