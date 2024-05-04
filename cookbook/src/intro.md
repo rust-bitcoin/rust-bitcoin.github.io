@@ -23,6 +23,10 @@ over the peer-to-peer network, plus fun stuff you can do with miniscript.
 1. [Constructing and Signing Transactions](tx.md)
     1. [SegWit V0](tx_segwit-v0.md)
     1. [Taproot](tx_taproot.md)
+1. [Working with PSBTs](psbt.md)
+    1. Constructing and Signing Multiple Inputs:
+        1. [SegWit V0](psbt/multiple_inputs_segwit-v0.md)
+        1. [Taproot](psbt/multiple_inputs_taproot.md)
 
 ## License
 
