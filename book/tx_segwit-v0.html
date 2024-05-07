@@ -446,7 +446,7 @@ which indicates that the sighash will include all the inputs and outputs.</li>
 This is the message that we will sign.
 The <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E">Message::from</a> method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.</p>
 <p>We compute the signature <code>sig</code> by using the <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_ecdsa"><code>sign_ecdsa</code></a> method.
-It takes a refence to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html"><code>Message</code></a> and a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.SecretKey.html"><code>SecretKey</code></a> as arguments,
+It takes a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html"><code>Message</code></a> and a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.SecretKey.html"><code>SecretKey</code></a> as arguments,
 and returns a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html"><code>Signature</code></a> type.</p>
 <p>In the next step, we update the witness stack for the input we just signed by first converting the <code>sighash_cache</code> into a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a>
 by using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction"><code>into_transaction</code></a> method.
@@ -476,7 +476,7 @@ This transaction is now ready to be broadcast to the Bitcoin network.</p>
 This is due to the fact that we need to pay a fee for the transaction.</p>
 </div>
 <div class="footnote-definition" id="expect"><sup class="footnote-definition-label">3</sup>
-<p>We will be unwraping any <a href="https://doc.rust-lang.org/std/option"><code>Option&lt;T&gt;</code></a>/<a href="https://doc.rust-lang.org/std/result"><code>Result&lt;T, E&gt;</code></a>
+<p>We will be unwrapping any <a href="https://doc.rust-lang.org/std/option"><code>Option&lt;T&gt;</code></a>/<a href="https://doc.rust-lang.org/std/result"><code>Result&lt;T, E&gt;</code></a>
 with the <code>expect</code> method.</p>
 </div>
 <div class="footnote-definition" id="secp"><sup class="footnote-definition-label">4</sup>
@@ -486,8 +486,7 @@ library implementing various cryptographic functions using the <a href="https://
 <a href="https://en.bitcoin.it/wiki/Secp256k1">secp256k1</a>.</p>
 </div>
 <div class="footnote-definition" id="spend"><sup class="footnote-definition-label">5</sup>
-<p>And also we are locking the output to an address that we control:
-the <code>wpkh</code> public key hash that we generated earlier.</p>
+<p>And also we are locking the output to an address that we control:</p>
 </div>
 
                     </main>

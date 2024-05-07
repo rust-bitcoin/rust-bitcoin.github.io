@@ -221,7 +221,7 @@ const CHANGE_AMOUNT: Amount = Amount::from_sat(14_999_000); // 1000 sat fee.</co
 This will be useful to mock a sender.
 In a real application these would be actual secrets<sup class="footnote-reference"><a href="#secp">3</a></sup>.
 We use the <code>SecretKey::new</code> method to generate a random private key <code>sk</code>.
-We then use the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key"><code>Keypair::from_secret_key</code></a> method to instatiate a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html"><code>Keypair</code></a> type,
+We then use the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key"><code>Keypair::from_secret_key</code></a> method to instantiate a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html"><code>Keypair</code></a> type,
 which is a data structure that holds a keypair consisting of a secret and a public key.
 Note that <code>senders_keys</code> is generic over the <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/trait.Signing.html"><code>Signing</code></a> trait.
 This is used to indicate that is an instance of <code>Secp256k1</code> and can be used for signing.</p>
@@ -460,7 +460,7 @@ It takes the following arguments:</p>
 <ul>
 <li><code>input_index</code> is the index of the input we are signing; it is a <a href="https://doc.rust-lang.org/std/primitive.usize.html"><code>usize</code></a> type.
 We are using <code>0</code> since we only have one input.</li>
-<li><code>&amp;prevouts</code> is a refence to the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html"><code>Prevouts</code></a> enum that we defined earlier.
+<li><code>&amp;prevouts</code> is a reference to the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html"><code>Prevouts</code></a> enum that we defined earlier.
 This is used to reference the outputs of previous transactions and also used to calculate our transaction value.</li>
 <li><code>annex</code> is an optional argument that is used to pass the annex data.
 We are not using it, so we are passing <code>None</code>.</li>
@@ -476,7 +476,7 @@ which indicates that the sighash will include all the inputs and outputs.</li>
 This is a the message that we will sign.
 The <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E">Message::from</a> method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.</p>
 <p>We compute the signature <code>sig</code> by using the <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_schnorr"><code>sign_schnorr</code></a> method.
-It takes a refence to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html"><code>Message</code></a> and a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Keypair.html"><code>Keypair</code></a> as arguments,
+It takes a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html"><code>Message</code></a> and a reference to a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Keypair.html"><code>Keypair</code></a> as arguments,
 and returns a <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html"><code>Signature</code></a> type.</p>
 <p>In the next step, we update the witness stack for the input we just signed by first converting the <code>sighash_cache</code> into a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a>
 by using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction"><code>into_transaction</code></a> method.
@@ -493,7 +493,7 @@ This transaction is now ready to be broadcast to the Bitcoin network.</p>
 This is due to the fact that we need to pay a fee for the transaction.</p>
 </div>
 <div class="footnote-definition" id="expect"><sup class="footnote-definition-label">2</sup>
-<p>We will be unwraping any <a href="https://doc.rust-lang.org/std/option"><code>Option&lt;T&gt;</code></a>/<a href="https://doc.rust-lang.org/std/result"><code>Result&lt;T, E&gt;</code></a>
+<p>We will be unwrapping any <a href="https://doc.rust-lang.org/std/option"><code>Option&lt;T&gt;</code></a>/<a href="https://doc.rust-lang.org/std/result"><code>Result&lt;T, E&gt;</code></a>
 with the <code>expect</code> method.</p>
 </div>
 <div class="footnote-definition" id="secp"><sup class="footnote-definition-label">3</sup>
