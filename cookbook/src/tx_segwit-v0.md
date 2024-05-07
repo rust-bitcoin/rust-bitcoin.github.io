@@ -307,7 +307,7 @@ This is the message that we will sign.
 The [Message::from](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.
 
 We compute the signature `sig` by using the [`sign_ecdsa`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_ecdsa) method.
-It takes a refence to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`SecretKey`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.SecretKey.html) as arguments,
+It takes a reference to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`SecretKey`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.SecretKey.html) as arguments,
 and returns a [`Signature`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html) type.
 
 In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
@@ -337,7 +337,7 @@ This transaction is now ready to be broadcast to the Bitcoin network.
 [^change]: Please note that the `CHANGE_AMOUNT` is not the same as the `DUMMY_UTXO_AMOUNT` minus the `SPEND_AMOUNT`.
            This is due to the fact that we need to pay a fee for the transaction.
 
-[^expect]: We will be unwraping any [`Option<T>`](https://doc.rust-lang.org/std/option)/[`Result<T, E>`](https://doc.rust-lang.org/std/result)
+[^expect]: We will be unwrapping any [`Option<T>`](https://doc.rust-lang.org/std/option)/[`Result<T, E>`](https://doc.rust-lang.org/std/result)
            with the `expect` method.
 
 [^secp]: Under the hood we are using the [`secp256k1`](https://github.com/rust-bitcoin/rust-secp256k1/) crate to generate the key pair.
@@ -346,4 +346,3 @@ This transaction is now ready to be broadcast to the Bitcoin network.
          [secp256k1](https://en.bitcoin.it/wiki/Secp256k1).
 
 [^spend]: And also we are locking the output to an address that we control:
-          the `wpkh` public key hash that we generated earlier. 

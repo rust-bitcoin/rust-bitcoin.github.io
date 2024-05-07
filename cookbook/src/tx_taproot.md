@@ -62,7 +62,7 @@ fn senders_keys<C: Signing>(secp: &Secp256k1<C>) -> Keypair {
 This will be useful to mock a sender.
 In a real application these would be actual secrets[^secp].
 We use the `SecretKey::new` method to generate a random private key `sk`.
-We then use the [`Keypair::from_secret_key`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key) method to instatiate a [`Keypair`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html) type,
+We then use the [`Keypair::from_secret_key`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key) method to instantiate a [`Keypair`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html) type,
 which is a data structure that holds a keypair consisting of a secret and a public key.
 Note that `senders_keys` is generic over the [`Signing`](https://docs.rs/secp256k1/0.29.0/secp256k1/trait.Signing.html) trait.
 This is used to indicate that is an instance of `Secp256k1` and can be used for signing.
@@ -320,7 +320,7 @@ It takes the following arguments:
 
 - `input_index` is the index of the input we are signing; it is a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html) type.
    We are using `0` since we only have one input.
-- `&prevouts` is a refence to the [`Prevouts`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html) enum that we defined earlier.
+- `&prevouts` is a reference to the [`Prevouts`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html) enum that we defined earlier.
    This is used to reference the outputs of previous transactions and also used to calculate our transaction value.
 - `annex` is an optional argument that is used to pass the annex data.
    We are not using it, so we are passing `None`.
@@ -338,7 +338,7 @@ This is a the message that we will sign.
 The [Message::from](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.
 
 We compute the signature `sig` by using the [`sign_schnorr`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_schnorr) method.
-It takes a refence to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`Keypair`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Keypair.html) as arguments,
+It takes a reference to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`Keypair`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Keypair.html) as arguments,
 and returns a [`Signature`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html) type.
 
 In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
@@ -356,7 +356,7 @@ This transaction is now ready to be broadcast to the Bitcoin network.
 [^change]: Please note that the `CHANGE_AMOUNT` is not the same as the `DUMMY_UTXO_AMOUNT` minus the `SPEND_AMOUNT`.
            This is due to the fact that we need to pay a fee for the transaction.
 
-[^expect]: We will be unwraping any [`Option<T>`](https://doc.rust-lang.org/std/option)/[`Result<T, E>`](https://doc.rust-lang.org/std/result)
+[^expect]: We will be unwrapping any [`Option<T>`](https://doc.rust-lang.org/std/option)/[`Result<T, E>`](https://doc.rust-lang.org/std/result)
            with the `expect` method.
 
 [^secp]: Under the hood we are using the [`secp256k1`](https://github.com/rust-bitcoin/rust-secp256k1/) crate to generate the key pair.
