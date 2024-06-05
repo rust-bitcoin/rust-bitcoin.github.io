@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting started - Rust Bitcoin Cookbook</title>
+        <title>Working with PSBTs - Rust Bitcoin Cookbook</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html" class="active"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li><li class="chapter-item expanded "><a href="psbt.html"><strong aria-hidden="true">3.</strong> Working with PSBTs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="psbt/multiple_inputs_segwit-v0.html"><strong aria-hidden="true">3.1.</strong> Constructing and Signing Multiple Inputs - SegWit V0</a></li><li class="chapter-item expanded "><a href="psbt/multiple_inputs_taproot.html"><strong aria-hidden="true">3.2.</strong> Constructing and Signing Multiple Inputs - Taproot</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li><li class="chapter-item expanded "><a href="psbt.html" class="active"><strong aria-hidden="true">3.</strong> Working with PSBTs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="psbt/multiple_inputs_segwit-v0.html"><strong aria-hidden="true">3.1.</strong> Constructing and Signing Multiple Inputs - SegWit V0</a></li><li class="chapter-item expanded "><a href="psbt/multiple_inputs_taproot.html"><strong aria-hidden="true">3.2.</strong> Constructing and Signing Multiple Inputs - Taproot</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -173,23 +173,40 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
-<p>To add <code>rust-bitcoin</code> to your project, run:</p>
-<pre><code class="language-bash">cargo add bitcoin
-</code></pre>
-<p>If you are just exploring you probably want to use the "rand-std" feature so you can generate random keys:</p>
-<pre><code class="language-bash">cargo add bitcoin --features=rand-std
-</code></pre>
+                        <h1 id="working-with-psbts"><a class="header" href="#working-with-psbts">Working with PSBTs</a></h1>
+<p>The Partially Signed Bitcoin Transaction (PSBT) format specifies an encoding for partially signed transactions.
+PSBTs are used in the context of multisignature wallets, hardware wallets,
+and other use cases where multiple parties need to collaborate to sign a transaction.</p>
+<p>PSBT version 0 is defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki">BIP 174</a>.
+It specifies 6 different roles that a party can play in the PSBT workflow:</p>
+<ul>
+<li><strong>Creator</strong>: Creates the PSBT and adds inputs and outputs.</li>
+<li><strong>Updater</strong>: Adds additional information to the PSBT,
+such as <code>redeemScript</code>, <code>witnessScript</code>, and BIP32 derivation paths.</li>
+<li><strong>Signer</strong>: Signs the PSBT, either all inputs or a subset of them.</li>
+<li><strong>Combiner</strong>: Combines multiple PSBTs into a single PSBT.</li>
+<li><strong>Finalizer</strong>: Finalizes the PSBT,
+adding any information necessary to complete the transaction.</li>
+<li><strong>Extractor</strong>: Extracts the finalized transaction from the PSBT.</li>
+</ul>
+<p>Note that multiple roles can be handled by a single entity
+but each role is specialized in what it should be capable of doing.</p>
+<p>We provide the following examples:</p>
+<ul>
+<li><a href="psbt/multiple_inputs_segwit-v0.html">Constructing and Signing Multiple Inputs - SegWit V0</a></li>
+<li><a href="psbt/multiple_inputs_taproot.html">Constructing and Signing Multiple Inputs - Taproot</a></li>
+</ul>
+<p>For extra information, see the <a href="https://bitcoinops.org/en/topics/psbt/">Bitcoin Optech article on PSBTs</a>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="tx_taproot.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="tx.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="psbt/multiple_inputs_segwit-v0.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -199,11 +216,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="tx_taproot.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="tx.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="psbt/multiple_inputs_segwit-v0.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

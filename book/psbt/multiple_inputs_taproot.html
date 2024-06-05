@@ -1,0 +1,773 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Constructing and Signing Multiple Inputs - Taproot - Rust Bitcoin Cookbook</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="A cookbook for Rust Bitcoin development">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="../getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="../tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="../tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li><li class="chapter-item expanded "><a href="../psbt.html"><strong aria-hidden="true">3.</strong> Working with PSBTs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../psbt/multiple_inputs_segwit-v0.html"><strong aria-hidden="true">3.1.</strong> Constructing and Signing Multiple Inputs - SegWit V0</a></li><li class="chapter-item expanded "><a href="../psbt/multiple_inputs_taproot.html" class="active"><strong aria-hidden="true">3.2.</strong> Constructing and Signing Multiple Inputs - Taproot</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust Bitcoin Cookbook</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="psbts-constructing-and-signing-multiple-inputs---taproot"><a class="header" href="#psbts-constructing-and-signing-multiple-inputs---taproot">PSBTs: Constructing and Signing Multiple Inputs - Taproot</a></h1>
+<p>The purpose of this section is to construct a PSBT that spends multiple inputs and signs it.
+We'll cover the following <a href="https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki">BIP 174</a>
+roles:</p>
+<ul>
+<li><strong>Creator</strong>: Creates a PSBT with multiple inputs and outputs.</li>
+<li><strong>Updater</strong>: Adds Witness and Taproot data to the PSBT.</li>
+<li><strong>Signer</strong>: Signs the PSBT.</li>
+<li><strong>Finalizer</strong>: Finalizes the PSBT.</li>
+</ul>
+<p>The example will focus on spending two Taproot inputs:</p>
+<ol>
+<li>20,000,000 satoshi UTXO, the first receiving ("external") address.</li>
+<li>10,000,000 satoshi UTXO, the first change ("internal") address.</li>
+</ol>
+<p>We'll be sending this to two outputs:</p>
+<ol>
+<li>25,000,000 satoshis to a receivers' address.</li>
+<li>4,990,000 satoshis back to us as change.</li>
+</ol>
+<p>The miner's fee will be 10,000 satoshis.</p>
+<p>This is the <code>cargo</code> commands that you need to run this example:</p>
+<pre><code class="language-bash">cargo add bitcoin --features "std, rand-std"
+</code></pre>
+<p>First we'll need to import the following:</p>
+<pre><code class="language-rust">use std::collections::BTreeMap;
+use std::str::FromStr;
+
+use bitcoin::bip32::{ChildNumber, IntoDerivationPath, DerivationPath, Fingerprint, Xpriv, Xpub};
+use bitcoin::hashes::Hash;
+use bitcoin::key::UntweakedPublicKey;
+use bitcoin::locktime::absolute;
+use bitcoin::psbt::Input;
+use bitcoin::secp256k1::{Secp256k1, Signing};
+use bitcoin::{
+    consensus, transaction, Address, Amount, Network, OutPoint, Psbt, ScriptBuf, Sequence,
+    TapLeafHash, TapSighashType, Transaction, TxIn, TxOut, Txid, Witness, XOnlyPublicKey,
+};</code></pre>
+<p>Here is the logic behind these imports:</p>
+<ul>
+<li><code>std::collections::BTreeMap</code> is used to store the key-value pairs of the Tap Key origins PSBT input fields.</li>
+<li><code>std::str::FromStr</code> is used to parse strings into Bitcoin primitives</li>
+<li><code>bitcoin::bip32</code> is used to derive keys according to <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP 32</a></li>
+<li><code>bitcoin::hashes::Hash</code> is used to hash data</li>
+<li><code>bitcoin::key</code> is used to tweak keys according to <a href="https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki">BIP 340</a></li>
+<li><code>bitcoin::locktime::absolute</code> is used to create a locktime</li>
+<li><code>bitcoin::psbt</code> is used to construct and manipulate PSBTs</li>
+<li><code>bitcoin::secp256k1</code> is used to sign transactions</li>
+<li><code>bitcoin::consensus</code> is used to serialize the final signed transaction to a raw transaction</li>
+<li><code>bitcoin::transaction</code> and <code>bitcoin::{Address, Network, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness}</code> are used to construct transactions</li>
+<li><code>bitcoin::{TapLeafHash, XOnlyPublicKey}</code> is used to construct Taproot inputs</li>
+</ul>
+<p>Next, we define the following constants:</p>
+<pre><code class="language-rust"><span class="boring">use bitcoin::Amount;
+</span>const XPRIV: &amp;str = "xprv9tuogRdb5YTgcL3P8Waj7REqDuQx4sXcodQaWTtEVFEp6yRKh1CjrWfXChnhgHeLDuXxo2auDZegMiVMGGxwxcrb2PmiGyCngLxvLeGsZRq";
+const BIP86_DERIVATION_PATH: &amp;str = "m/86'/0'/0'";
+const MASTER_FINGERPRINT: &amp;str = "9680603f";
+const DUMMY_UTXO_AMOUNT_INPUT_1: Amount = Amount::from_sat(20_000_000);
+const DUMMY_UTXO_AMOUNT_INPUT_2: Amount = Amount::from_sat(10_000_000);
+const SPEND_AMOUNT: Amount = Amount::from_sat(25_000_000);
+const CHANGE_AMOUNT: Amount = Amount::from_sat(4_990_000); // 10_000 sat fee.</code></pre>
+<ul>
+<li><code>XPRIV</code> is the extended private key that will be used to derive the keys for the Taproot inputs.</li>
+<li><code>MASTER_FINGERPRINT</code> is the fingerprint of the master key.</li>
+<li><code>BIP86_DERIVATION_PATH</code> is the derivation path for the BIP 86 key.
+Since this is a mainnet example, we are using the path <code>m/86'/0'/0'</code>.</li>
+<li><code>DUMMY_UTXO_AMOUNT_INPUT_1</code> is the amount of the dummy UTXO we will be spending from the first input.</li>
+<li><code>DUMMY_UTXO_AMOUNT_INPUT_2</code> is the amount of the dummy UTXO we will be spending from the second input.</li>
+<li><code>SPEND_AMOUNT</code> is the amount we will be spending from the dummy UTXO related to the first input.</li>
+<li><code>CHANGE_AMOUNT</code><sup class="footnote-reference"><a href="#change">1</a></sup> is the amount we will be sending back to ourselves as change.</li>
+</ul>
+<p>Before we can construct the transaction, we need to define some helper functions:</p>
+<pre><code class="language-rust"><span class="boring">use std::collections::BTreeMap;
+</span><span class="boring">use std::str::FromStr;
+</span><span class="boring">
+</span><span class="boring">use bitcoin::bip32::{ChildNumber, IntoDerivationPath, DerivationPath, Fingerprint, Xpriv, Xpub};
+</span><span class="boring">use bitcoin::hashes::Hash;
+</span><span class="boring">use bitcoin::key::UntweakedPublicKey;
+</span><span class="boring">use bitcoin::secp256k1::{Secp256k1, Signing};
+</span><span class="boring">use bitcoin::{Address, Amount, Network, OutPoint, TapLeafHash, Txid, TxOut, XOnlyPublicKey};
+</span><span class="boring">
+</span><span class="boring">const BIP86_DERIVATION_PATH: &amp;str = "m/86'/0'/0'";
+</span><span class="boring">const DUMMY_UTXO_AMOUNT_INPUT_1: Amount = Amount::from_sat(20_000_000);
+</span><span class="boring">const DUMMY_UTXO_AMOUNT_INPUT_2: Amount = Amount::from_sat(10_000_000);
+</span>fn get_external_address_xpriv&lt;C: Signing&gt;(
+    secp: &amp;Secp256k1&lt;C&gt;,
+    master_xpriv: Xpriv,
+    index: u32,
+) -&gt; Xpriv {
+    let derivation_path =
+        BIP86_DERIVATION_PATH.into_derivation_path().expect("valid derivation path");
+    let child_xpriv = master_xpriv
+        .derive_priv(secp, &amp;derivation_path)
+        .expect("valid child xpriv");
+    let external_index = ChildNumber::from_normal_idx(0).unwrap();
+    let idx = ChildNumber::from_normal_idx(index).expect("valid index number");
+
+    child_xpriv
+        .derive_priv(secp, &amp;[external_index, idx])
+        .expect("valid xpriv")
+}
+
+fn get_internal_address_xpriv&lt;C: Signing&gt;(
+    secp: &amp;Secp256k1&lt;C&gt;,
+    master_xpriv: Xpriv,
+    index: u32,
+) -&gt; Xpriv {
+    let derivation_path =
+        BIP86_DERIVATION_PATH.into_derivation_path().expect("valid derivation path");
+    let child_xpriv = master_xpriv
+        .derive_priv(secp, &amp;derivation_path)
+        .expect("valid child xpriv");
+    let internal_index = ChildNumber::from_normal_idx(1).unwrap();
+    let idx = ChildNumber::from_normal_idx(index).expect("valid index number");
+
+    child_xpriv
+        .derive_priv(secp, &amp;[internal_index, idx])
+        .expect("valid xpriv")
+}
+
+fn get_tap_key_origin(
+    x_only_key: UntweakedPublicKey,
+    master_fingerprint: Fingerprint,
+    path: DerivationPath,
+) -&gt; BTreeMap&lt;XOnlyPublicKey, (Vec&lt;TapLeafHash&gt;, (Fingerprint, DerivationPath))&gt; {
+    let mut map = BTreeMap::new();
+    map.insert(x_only_key, (vec![], (master_fingerprint, path)));
+    map
+}
+
+fn receivers_address() -&gt; Address {
+    Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+        .expect("a valid address")
+        .require_network(Network::Bitcoin)
+        .expect("valid address for mainnet")
+}
+
+fn dummy_unspent_transaction_outputs() -&gt; Vec&lt;(OutPoint, TxOut)&gt; {
+    let script_pubkey_1 =
+        Address::from_str("bc1p80lanj0xee8q667aqcnn0xchlykllfsz3gu5skfv9vjsytaujmdqtv52vu")
+            .unwrap()
+            .require_network(Network::Bitcoin)
+            .unwrap()
+            .script_pubkey();
+
+    let out_point_1 = OutPoint {
+        txid: Txid::all_zeros(), // Obviously invalid.
+        vout: 0,
+    };
+
+    let utxo_1 = TxOut {
+        value: DUMMY_UTXO_AMOUNT_INPUT_1,
+        script_pubkey: script_pubkey_1,
+    };
+
+    let script_pubkey_2 =
+        Address::from_str("bc1pfd0jmmdnp278vppcw68tkkmquxtq50xchy7f6wdmjtjm7fgsr8dszdcqce")
+            .unwrap()
+            .require_network(Network::Bitcoin)
+            .unwrap()
+            .script_pubkey();
+
+    let out_point_2 = OutPoint {
+        txid: Txid::all_zeros(), // Obviously invalid.
+        vout: 1,
+    };
+
+    let utxo_2 = TxOut {
+        value: DUMMY_UTXO_AMOUNT_INPUT_2,
+        script_pubkey: script_pubkey_2,
+    };
+    vec![(out_point_1, utxo_1), (out_point_2, utxo_2)]
+}</code></pre>
+<p><code>get_external_address_xpriv</code> and <code>get_internal_address_xpriv</code> generates the external and internal addresses extended private key,
+given a master extended private key and an address index; respectively.
+Note that these functions takes a <code>Secp256k1</code> that is
+generic over the <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/trait.Signing.html"><code>Signing</code></a> trait.
+This is used to indicate that is an instance of <code>Secp256k1</code> and can be used for signing and other things.</p>
+<p>The <code>get_tap_key_origin</code> function generates a Tap Key Origin key-value map,
+which is a map of Taproot X-only keys to origin info and leaf hashes contained in it.
+This is necessary to sign a Taproot input.</p>
+<p><code>receivers_address</code> generates a receiver address.
+In a real application this would be the address of the receiver.
+We use the method <code>Address::from_str</code> to parse the string of addresses<sup class="footnote-reference"><a href="#arbitrary_address">2</a></sup> into an <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Address.html"><code>Address</code></a>.
+Hence, it is necessary to import the <code>std::str::FromStr</code> trait.
+This is an arbitrary, however valid, Bitcoin mainnet address.
+Hence we use the <code>require_network</code> method to ensure that the address is valid for mainnet.</p>
+<p><code>dummy_unspent_transaction_outputs</code> generates a dummy unspent transaction output (UTXO).
+This is a P2TR (<code>ScriptBuf::new_p2tr</code>) UTXO.</p>
+<p>The UTXO has a dummy invalid transaction ID (<code>txid: Txid::all_zeros()</code>),
+and any value of the <code>const DUMMY_UTXO_AMOUNT_N</code> that we defined earlier.
+Note that the <code>vout</code> is set to <code>0</code> for the first UTXO and <code>1</code> for the second UTXO.
+P2TR UTXOs could be tweaked (<a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.TweakedPublicKey.html"><code>TweakedPublicKey</code></a>)
+or untweaked (<a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/type.UntweakedPublicKey.html"><code>UntweakedPublicKey</code></a>).
+We are using the latter, since we are not going to tweak the key.
+We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html"><code>OutPoint</code></a> struct to represent the transaction output.
+Finally, we return vector of tuples <code>(out_point, utxo)</code>.</p>
+<p>Now we are ready for our main function that will create, update, and sign a PSBT;
+while also extracting a transaction that spends the <code>p2tr</code>s unspent outputs:</p>
+<pre><code class="language-rust"><span class="boring">use std::collections::BTreeMap;
+</span><span class="boring">use std::str::FromStr;
+</span><span class="boring">
+</span><span class="boring">use bitcoin::bip32::{ChildNumber, IntoDerivationPath, DerivationPath, Fingerprint, Xpriv, Xpub};
+</span><span class="boring">use bitcoin::hashes::Hash;
+</span><span class="boring">use bitcoin::key::UntweakedPublicKey;
+</span><span class="boring">use bitcoin::locktime::absolute;
+</span><span class="boring">use bitcoin::psbt::Input;
+</span><span class="boring">use bitcoin::secp256k1::{Secp256k1, Signing};
+</span><span class="boring">use bitcoin::{
+</span><span class="boring">    consensus, transaction, Address, Amount, Network, OutPoint, Psbt, ScriptBuf, Sequence,
+</span><span class="boring">    TapLeafHash, TapSighashType, Transaction, TxIn, TxOut, Txid, Witness, XOnlyPublicKey,
+</span><span class="boring">};
+</span><span class="boring">
+</span><span class="boring">const XPRIV: &amp;str = "xprv9tuogRdb5YTgcL3P8Waj7REqDuQx4sXcodQaWTtEVFEp6yRKh1CjrWfXChnhgHeLDuXxo2auDZegMiVMGGxwxcrb2PmiGyCngLxvLeGsZRq";
+</span><span class="boring">const BIP86_DERIVATION_PATH: &amp;str = "m/86'/0'/0'";
+</span><span class="boring">const MASTER_FINGERPRINT: &amp;str = "9680603f";
+</span><span class="boring">const DUMMY_UTXO_AMOUNT_INPUT_1: Amount = Amount::from_sat(20_000_000);
+</span><span class="boring">const DUMMY_UTXO_AMOUNT_INPUT_2: Amount = Amount::from_sat(10_000_000);
+</span><span class="boring">const SPEND_AMOUNT: Amount = Amount::from_sat(25_000_000);
+</span><span class="boring">const CHANGE_AMOUNT: Amount = Amount::from_sat(4_990_000); // 10_000 sat fee.
+</span><span class="boring">
+</span><span class="boring">fn get_external_address_xpriv&lt;C: Signing&gt;(
+</span><span class="boring">    secp: &amp;Secp256k1&lt;C&gt;,
+</span><span class="boring">    master_xpriv: Xpriv,
+</span><span class="boring">    index: u32,
+</span><span class="boring">) -&gt; Xpriv {
+</span><span class="boring">    let derivation_path =
+</span><span class="boring">       BIP86_DERIVATION_PATH.into_derivation_path().expect("valid derivation path");
+</span><span class="boring">    let child_xpriv = master_xpriv
+</span><span class="boring">        .derive_priv(secp, &amp;derivation_path)
+</span><span class="boring">        .expect("valid child xpriv");
+</span><span class="boring">    let external_index = ChildNumber::from_normal_idx(0).unwrap();
+</span><span class="boring">    let idx = ChildNumber::from_normal_idx(index).expect("valid index number");
+</span><span class="boring">
+</span><span class="boring">    child_xpriv
+</span><span class="boring">        .derive_priv(secp, &amp;[external_index, idx])
+</span><span class="boring">        .expect("valid xpriv")
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn get_internal_address_xpriv&lt;C: Signing&gt;(
+</span><span class="boring">    secp: &amp;Secp256k1&lt;C&gt;,
+</span><span class="boring">    master_xpriv: Xpriv,
+</span><span class="boring">    index: u32,
+</span><span class="boring">) -&gt; Xpriv {
+</span><span class="boring">    let derivation_path =
+</span><span class="boring">       BIP86_DERIVATION_PATH.into_derivation_path().expect("valid derivation path");
+</span><span class="boring">    let child_xpriv = master_xpriv
+</span><span class="boring">        .derive_priv(secp, &amp;derivation_path)
+</span><span class="boring">        .expect("valid child xpriv");
+</span><span class="boring">    let internal_index = ChildNumber::from_normal_idx(1).unwrap();
+</span><span class="boring">    let idx = ChildNumber::from_normal_idx(index).expect("valid index number");
+</span><span class="boring">
+</span><span class="boring">    child_xpriv
+</span><span class="boring">        .derive_priv(secp, &amp;[internal_index, idx])
+</span><span class="boring">        .expect("valid xpriv")
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn get_tap_key_origin(
+</span><span class="boring">    x_only_key: UntweakedPublicKey,
+</span><span class="boring">    master_fingerprint: Fingerprint,
+</span><span class="boring">    path: DerivationPath,
+</span><span class="boring">) -&gt; BTreeMap&lt;XOnlyPublicKey, (Vec&lt;TapLeafHash&gt;, (Fingerprint, DerivationPath))&gt; {
+</span><span class="boring">    let mut map = BTreeMap::new();
+</span><span class="boring">    map.insert(x_only_key, (vec![], (master_fingerprint, path)));
+</span><span class="boring">    map
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn receivers_address() -&gt; Address {
+</span><span class="boring">    Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+</span><span class="boring">        .expect("a valid address")
+</span><span class="boring">        .require_network(Network::Bitcoin)
+</span><span class="boring">        .expect("valid address for mainnet")
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn dummy_unspent_transaction_outputs() -&gt; Vec&lt;(OutPoint, TxOut)&gt; {
+</span><span class="boring">    let script_pubkey_1 =
+</span><span class="boring">        Address::from_str("bc1p80lanj0xee8q667aqcnn0xchlykllfsz3gu5skfv9vjsytaujmdqtv52vu")
+</span><span class="boring">            .unwrap()
+</span><span class="boring">            .require_network(Network::Bitcoin)
+</span><span class="boring">            .unwrap()
+</span><span class="boring">            .script_pubkey();
+</span><span class="boring">
+</span><span class="boring">    let out_point_1 = OutPoint {
+</span><span class="boring">        txid: Txid::all_zeros(), // Obviously invalid.
+</span><span class="boring">        vout: 0,
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    let utxo_1 = TxOut {
+</span><span class="boring">        value: DUMMY_UTXO_AMOUNT_INPUT_1,
+</span><span class="boring">        script_pubkey: script_pubkey_1,
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    let script_pubkey_2 =
+</span><span class="boring">        Address::from_str("bc1pfd0jmmdnp278vppcw68tkkmquxtq50xchy7f6wdmjtjm7fgsr8dszdcqce")
+</span><span class="boring">            .unwrap()
+</span><span class="boring">            .require_network(Network::Bitcoin)
+</span><span class="boring">            .unwrap()
+</span><span class="boring">            .script_pubkey();
+</span><span class="boring">
+</span><span class="boring">    let out_point_2 = OutPoint {
+</span><span class="boring">        txid: Txid::all_zeros(), // Obviously invalid.
+</span><span class="boring">        vout: 1,
+</span><span class="boring">    };
+</span><span class="boring">
+</span><span class="boring">    let utxo_2 = TxOut {
+</span><span class="boring">        value: DUMMY_UTXO_AMOUNT_INPUT_2,
+</span><span class="boring">        script_pubkey: script_pubkey_2,
+</span><span class="boring">    };
+</span><span class="boring">    vec![(out_point_1, utxo_1), (out_point_2, utxo_2)]
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn main() {
+    let secp = Secp256k1::new();
+
+    // Get the individual xprivs we control. In a real application these would come from a stored secret.
+    let master_xpriv = XPRIV.parse::&lt;Xpriv&gt;().expect("valid xpriv");
+    let xpriv_input_1 = get_external_address_xpriv(&amp;secp, master_xpriv, 0);
+    let xpriv_input_2 = get_internal_address_xpriv(&amp;secp, master_xpriv, 0);
+    let xpriv_change = get_internal_address_xpriv(&amp;secp, master_xpriv, 1);
+
+    // Get the PKs
+    let (pk_input_1, _) = Xpub::from_priv(&amp;secp, &amp;xpriv_input_1)
+        .public_key
+        .x_only_public_key();
+    let (pk_input_2, _) = Xpub::from_priv(&amp;secp, &amp;xpriv_input_2)
+        .public_key
+        .x_only_public_key();
+    let (pk_change, _) = Xpub::from_priv(&amp;secp, &amp;xpriv_change)
+        .public_key
+        .x_only_public_key();
+
+    // Get the Tap Key Origins
+    // Map of tap root X-only keys to origin info and leaf hashes contained in it.
+    let origin_input_1 = get_tap_key_origin(
+        pk_input_1,
+        Fingerprint::from_str(MASTER_FINGERPRINT).unwrap(),
+        "m/86'/0'/0'/0/0".into_derivation_path().expect("valid derivation path"), // First external address.
+    );
+    let origin_input_2 = get_tap_key_origin(
+        pk_input_2,
+        Fingerprint::from_str(MASTER_FINGERPRINT).unwrap(),
+        "m/86'/0'/0'/1/0".into_derivation_path().expect("valid derivation path"), // First internal address.
+    );
+    let origins = [origin_input_1, origin_input_2];
+
+    // Get the unspent outputs that are locked to the key above that we control.
+    // In a real application these would come from the chain.
+    let utxos: Vec&lt;TxOut&gt; = dummy_unspent_transaction_outputs()
+        .into_iter()
+        .map(|(_, utxo)| utxo)
+        .collect();
+
+    // Get the addresses to send to.
+    let address = receivers_address();
+
+    // The inputs for the transaction we are constructing.
+    let inputs: Vec&lt;TxIn&gt; = dummy_unspent_transaction_outputs()
+        .into_iter()
+        .map(|(outpoint, _)| TxIn {
+            previous_output: outpoint,
+            script_sig: ScriptBuf::default(),
+            sequence: Sequence::ENABLE_RBF_NO_LOCKTIME,
+            witness: Witness::default(),
+        })
+        .collect();
+
+    // The spend output is locked to a key controlled by the receiver.
+    let spend = TxOut {
+        value: SPEND_AMOUNT,
+        script_pubkey: address.script_pubkey(),
+    };
+
+    // The change output is locked to a key controlled by us.
+    let change = TxOut {
+        value: CHANGE_AMOUNT,
+        script_pubkey: ScriptBuf::new_p2tr(&amp;secp, pk_change, None), // Change comes back to us.
+    };
+
+    // The transaction we want to sign and broadcast.
+    let unsigned_tx = Transaction {
+        version: transaction::Version::TWO,  // Post BIP 68.
+        lock_time: absolute::LockTime::ZERO, // Ignore the locktime.
+        input: inputs,                       // Input is 0-indexed.
+        output: vec![spend, change],         // Outputs, order does not matter.
+    };
+
+    // Now we'll start the PSBT workflow.
+    // Step 1: Creator role; that creates,
+    // and add inputs and outputs to the PSBT.
+    let mut psbt = Psbt::from_unsigned_tx(unsigned_tx).expect("Could not create PSBT");
+
+    // Step 2:Updater role; that adds additional
+    // information to the PSBT.
+    let ty = TapSighashType::All.into();
+    psbt.inputs = vec![
+        Input {
+            witness_utxo: Some(utxos[0].clone()),
+            tap_key_origins: origins[0].clone(),
+            tap_internal_key: Some(pk_input_1),
+            sighash_type: Some(ty),
+            ..Default::default()
+        },
+        Input {
+            witness_utxo: Some(utxos[1].clone()),
+            tap_key_origins: origins[1].clone(),
+            tap_internal_key: Some(pk_input_2),
+            sighash_type: Some(ty),
+            ..Default::default()
+        },
+    ];
+
+    // Step 3: Signer role; that signs the PSBT.
+    psbt.sign(&amp;master_xpriv, &amp;secp).expect("valid signature");
+
+    // Step 4: Finalizer role; that finalizes the PSBT.
+    psbt.inputs.iter_mut().for_each(|input| {
+        let script_witness = Witness::p2tr_key_spend(&amp;input.tap_key_sig.unwrap());
+        input.final_script_witness = Some(script_witness);
+
+        // Clear all the data fields as per the spec.
+        input.partial_sigs = BTreeMap::new();
+        input.sighash_type = None;
+        input.redeem_script = None;
+        input.witness_script = None;
+        input.bip32_derivation = BTreeMap::new();
+    });
+
+    // BOOM! Transaction signed and ready to broadcast.
+    let signed_tx = psbt.extract_tx().expect("valid transaction");
+    let serialized_signed_tx = consensus::encode::serialize_hex(&amp;signed_tx);
+    println!("Transaction Details: {:#?}", signed_tx);
+    // check with:
+    // bitcoin-cli decoderawtransaction &lt;RAW_TX&gt; true
+    println!("Raw Transaction: {}", serialized_signed_tx);
+}</code></pre>
+<p>Let's go over the main function code block by block.</p>
+<p><code>let secp = Secp256k1::new();</code> creates a new <code>Secp256k1</code> context with all capabilities.
+Since we added the <code>rand-std</code> feature to our <code>Cargo.toml</code>,</p>
+<p>Next, we get the individual extended private keys (xpriv) that we control.
+These are:</p>
+<ul>
+<li>the master xpriv,</li>
+<li>the xprivs for inputs 1 and 2;
+these are done with the <code>get_external_address_xpriv</code> and <code>get_internal_address_xpriv</code> functions.</li>
+<li>the xpriv for the change output, also using the <code>get_internal_address_xpriv</code> function.</li>
+</ul>
+<p>Now, we need the Taproot X-only keys along the origin info and leaf hashes contained in it.
+This is done with the <code>get_tap_key_origin</code> function.</p>
+<p>The inputs for the transaction we are constructing,
+here named <code>utxos</code>,
+are created with the <code>dummy_unspent_transaction_outputs</code> function.
+<code>let address = receivers_address();</code> generates a receiver's address <code>address</code>.
+All of these are helper functions that we defined earlier.</p>
+<p>In <code>let input = TxIn {...}</code> we are instantiating the inputs for the transaction we are constructing
+Inside the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxIn.html"><code>TxIn</code></a> struct we are setting the following fields:</p>
+<ul>
+<li><code>previous_output</code> is the outpoint of the dummy UTXO we are spending; it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html"><code>OutPoint</code></a> type.</li>
+<li><code>script_sig</code> is the script code required to spend an output; it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html"><code>ScriptBuf</code></a> type.
+We are instantiating a new empty script with <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new"><code>ScriptBuf::new()</code></a>.</li>
+<li><code>sequence</code> is the sequence number; it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html"><code>Sequence</code></a> type.
+We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html#associatedconstant.ENABLE_RBF_NO_LOCKTIME"><code>ENABLE_RBF_NO_LOCKTIME</code></a> constant.</li>
+<li><code>witness</code> is the witness stack; it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html"><code>Witness</code></a> type.
+We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#impl-Default"><code>default</code></a> method to create an empty witness that will be filled in later after signing.
+This is possible because <code>Witness</code> implements the <a href="https://doc.rust-lang.org/std/default/trait.Default.html"><code>Default</code></a> trait.</li>
+</ul>
+<p>In <code>let spend = TxOut {...}</code> we are instantiating the spend output.
+Inside the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxOut.html"><code>TxOut</code></a> struct we are setting the following fields:</p>
+<ul>
+<li><code>value</code> is the amount we are spending; it is a <a href="https://doc.rust-lang.org/std/primitive.u64.html"><code>u64</code></a> type.
+We are using the <code>const SPEND_AMOUNT</code> that we defined earlier.</li>
+<li><code>script_pubkey</code> is the script code required to spend a P2TR output; it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html"><code>ScriptBuf</code></a> type.
+We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/address/struct.Address.html#method.script_pubkey"><code>script_pubkey</code></a> method to generate the script pubkey from the receivers address.
+This will lock the output to the receiver's address.</li>
+</ul>
+<p>In <code>let change = TxOut {...}</code> we are instantiating the change output.
+It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference"><a href="#spend">3</a></sup>.
+This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr"><code>ScriptBuf::new_p2tr(...)</code></a>,
+which generates P2TR-type of script pubkey.</p>
+<p>In <code>let unsigned_tx = Transaction {...}</code> we are instantiating the transaction we want to sign and broadcast using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a> struct.
+We set the following fields:</p>
+<ul>
+<li><code>version</code> is the transaction version; it can be a <a href="https://doc.rust-lang.org/std/primitive.u32.html"><code>i32</code></a> type.
+However it is best to use the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/block/struct.Version.html"><code>Version</code></a> struct.
+We are using version <code>TWO</code> which means that <a href="https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki">BIP 68</a> applies.</li>
+<li><code>lock_time</code> is the transaction lock time;
+it is a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/locktime/absolute/enum.LockTime.html"><code>LockTime</code></a> enum.
+We are using the constant <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/locktime/absolute/enum.LockTime.html#associatedconstant.ZERO"><code>ZERO</code></a>
+This will make the transaction valid immediately.</li>
+<li><code>input</code> is the input vector; it is a <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec&lt;TxIn&gt;</code></a> type.
+We are using the <code>input</code> variable that we defined earlier wrapped in the <a href="https://doc.rust-lang.org/std/macro.vec.html"><code>vec!</code></a> macro for convenient initialization.</li>
+<li><code>output</code> is the output vector; it is a <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec&lt;TxOut&gt;</code></a> type.
+We are using the <code>spend</code> and <code>change</code> variables that we defined earlier wrapped in the <a href="https://doc.rust-lang.org/std/macro.vec.html"><code>vec!</code></a> macro for convenient initialization.</li>
+</ul>
+<p>Now we are ready to start our PSBT workflow.</p>
+<p>The first step is the Creator role.
+We create a PSBT from the unsigned transaction using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Psbt.html#method.from_unsigned_tx"><code>Psbt::from_unsigned_tx</code></a> method.</p>
+<p>Next, we move to the Updater role.
+We add additional information to the PSBT.
+This is done by setting the <code>psbt.inputs</code> field to a vector of <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Input.html"><code>Input</code></a> structs.
+In particular, we set the following fields:</p>
+<ul>
+<li><code>witness_utxo</code> is the witness UTXO; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;TxOut&gt;</code></a> type.
+We are using the <code>utxos</code> vector that we defined earlier.</li>
+<li><code>tap_key_origins</code> is the Tap Key Origins; it is a <a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html"><code>BTreeMap&lt;XOnlyPublicKey, (Vec&lt;TapLeafHash&gt;, (Fingerprint, DerivationPath))&gt;</code></a> type.
+We are using the <code>origins</code> vector that we defined earlier.</li>
+<li><code>tap_internal_key</code> is the Taproot internal key; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;XOnlyPublicKey&gt;</code></a> type.</li>
+<li><code>sighash_type</code> is the sighash type; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;PsbtSighashType&gt;</code></a> type.</li>
+</ul>
+<p>All the other fields are set to their default values using the <a href="https://doc.rust-lang.org/std/default/trait.Default.html#tymethod.default"><code>Default::default()</code></a> method.</p>
+<p>The following step is the Signer role.
+Here is were we sign the PSBT with the
+<a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Psbt.html#method.sign"><code>sign</code></a> method.
+This method takes the master extended private key and the <code>Secp256k1</code> context as arguments.
+It attempts to create all the required signatures for this PSBT using the extended private key.</p>
+<p>Finally, we move to the Finalizer role.
+Here we finalize the PSBT, making it ready to be extracted into a signed transaction,
+and if necessary, broadcasted to the Bitcoin network.
+This is done by setting the following fields:</p>
+<ul>
+<li><code>final_script_witness</code> is the final script witness; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;Witness&gt;</code></a> type.
+We are using the <code>Witness::p2tr_key_spend()</code> method to create a witness required to do a key path spend of a P2TR output.</li>
+<li><code>partial_sigs</code> is the partial signatures; it is a <a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html"><code>BTreeMap&lt;XOnlyPublicKey, Vec&lt;u8&gt;&gt;</code></a> type.
+We are using an empty map.</li>
+<li><code>sighash_type</code> is the sighash type; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;PsbtSighashType&gt;</code></a> type.
+We are using the <code>None</code> value.</li>
+<li><code>redeem_script</code> is the redeem script; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;ScriptBuf&gt;</code></a> type.
+We are using the <code>None</code> value.</li>
+<li><code>witness_script</code> is the witness script; it is an <a href="https://doc.rust-lang.org/std/option/enum.Option.html"><code>Option&lt;ScriptBuf&gt;</code></a> type.</li>
+<li><code>bip32_derivation</code> is the BIP 32 derivation; it is a <a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html"><code>BTreeMap&lt;Xpub, (Fingerprint, DerivationPath)&gt;</code></a> type.
+We are using an empty map.</li>
+</ul>
+<p>Finally, we extract the signed transaction from the PSBT using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Psbt.html#method.extract_tx"><code>extract_tx</code></a> method.</p>
+<p>As the last step we print both the transaction details and the raw transaction
+to the terminal using the <a href="https://doc.rust-lang.org/std/macro.println.html"><code>println!</code></a> macro.
+This transaction is now ready to be broadcast to the Bitcoin network.</p>
+<p>For anything in production, the step 4 (Finalizer) should be done with the
+<a href="https://docs.rs/miniscript/11.0.0/miniscript/psbt/trait.PsbtExt.html"><code>psbt::PsbtExt</code> from the <code>miniscript</code> crate</a> trait.
+It provides a
+<a href="https://docs.rs/miniscript/11.0.0/miniscript/psbt/trait.PsbtExt.html#tymethod.finalize_mut"><code>.finalize_mut</code></a>
+to a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Psbt.html"><code>Psbt</code></a> object,
+which takes in a mutable reference to <code>Psbt</code> and populates the <code>final_witness</code> and <code>final_scriptsig</code> for all inputs.</p>
+<div class="footnote-definition" id="change"><sup class="footnote-definition-label">1</sup>
+<p>Please note that the <code>CHANGE_AMOUNT</code> is not the same as the <code>DUMMY_UTXO_AMOUNT_INPUT_N</code>s minus the <code>SPEND_AMOUNT</code>.
+This is due to the fact that we need to pay a miner's fee for the transaction.</p>
+</div>
+<div class="footnote-definition" id="arbitrary_address"><sup class="footnote-definition-label">2</sup>
+<p>this is an arbitrary mainnet addresses from block 805222.</p>
+</div>
+<div class="footnote-definition" id="spend"><sup class="footnote-definition-label">3</sup>
+<p>And also we are locking the output to an address that we control:
+the <code>internal_key</code> public key hash that we generated earlier.</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../psbt/multiple_inputs_segwit-v0.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../psbt/multiple_inputs_segwit-v0.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
