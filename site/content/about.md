@@ -48,3 +48,4 @@ Currently rust-bitcoin is used by a number of projects, including:
   lightning node without worrying about implementing low-level lightning logic correctly.
 - [Fedimint](https://github.com/fedimint): Federated chaumian e-cash on Bitcoin.
 - [Mutiny Wallet](https://github.com/MutinyWallet): Mutiny is a self-custodial lightning wallet that runs in the browser.
+- [Satonomics](https://github.com/satonomics-org/satonomics): A FOSS, Bitcoin-only, self-hostable Glassnode-like analytics tool.
