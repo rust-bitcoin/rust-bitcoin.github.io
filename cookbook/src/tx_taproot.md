@@ -11,8 +11,6 @@ cargo add bitcoin --features "std, rand-std"
 First we'll need to import the following:
 
 ```rust
-use std::str::FromStr;
-
 use bitcoin::hashes::Hash;
 use bitcoin::key::{Keypair, TapTweak, TweakedKeypair, UntweakedPublicKey};
 use bitcoin::locktime::absolute;
@@ -26,7 +24,6 @@ use bitcoin::{
 
 Here is the logic behind these imports:
 
-- `std::str::FromStr` is used to parse strings into Bitcoin primitives
 - `bitcoin::key` is used to tweak keys according to [BIP340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki)
 - `bitcoin::hashes::Hash` is used to hash data
 - `bitcoin::locktime::absolute` is used to create a locktime
@@ -68,10 +65,9 @@ Note that `senders_keys` is generic over the [`Signing`](https://docs.rs/secp256
 This is used to indicate that is an instance of `Secp256k1` and can be used for signing.
 
 ```rust
-# use std::str::FromStr;
 # use bitcoin::{Address, Network};
 fn receivers_address() -> Address {
-    Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+    "bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va".parse::<Address<_>>()
         .expect("a valid address")
         .require_network(Network::Bitcoin)
         .expect("valid address for mainnet")
@@ -80,11 +76,11 @@ fn receivers_address() -> Address {
 
 `receivers_address` generates a receiver address.
 In a real application this would be the address of the receiver.
-We use the method `Address::from_str` to parse the string `"bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va"`[^arbitrary_address] into an address.
-Hence, it is necessary to import the `std::str::FromStr` trait.
+We use the `parse` method on `&str` to parse `"bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va"`[^arbitrary_address] as an address.
 Note that `bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va` is a [Bech32](https://bitcoinops.org/en/topics/bech32/) address.
 This is an arbitrary, however valid, Bitcoin mainnet address.
-Hence we use the `require_network` method to ensure that the address is valid for mainnet.
+Bitcoin applications are usually configured with specific Bitcoin network at the start and use that.
+To prevent mistakes related to people sending satoshis to a wrong network we need to call the `require_network` method to ensure that the address is valid for the network, in our case mainnet.
 
 ```rust
 # use bitcoin::{Amount, OutPoint, ScriptBuf, TxOut, Txid};
@@ -129,14 +125,12 @@ and a value of the `const DUMMY_UTXO_AMOUNT` that we defined earlier.
 P2TR UTXOs could be tweaked ([`TweakedPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.TweakedPublicKey.html))
 or untweaked ([`UntweakedPublicKey`](https://docs.rs/bitcoin/0.32.0/bitcoin/key/type.UntweakedPublicKey.html)).
 We are using the latter, since we are not going to tweak the key.
-We are using the [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the transaction output.
+We are using the [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) struct to represent the previous transaction output.
 Finally, we return the tuple `(out_point, utxo)`.
 
 Now we are ready for our main function that will sign a transaction that spends a `p2tr` unspent output:
 
 ```rust
-# use std::str::FromStr;
-#
 # use bitcoin::hashes::Hash;
 # use bitcoin::key::{Keypair, TapTweak, TweakedKeypair, UntweakedPublicKey};
 # use bitcoin::locktime::absolute;
@@ -157,7 +151,7 @@ Now we are ready for our main function that will sign a transaction that spends 
 # }
 # 
 # fn receivers_address() -> Address {
-#     Address::from_str("bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va")
+#     "bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va".parse::<Address<_>>()
 #         .expect("a valid address")
 #         .require_network(Network::Bitcoin)
 #         .expect("valid address for mainnet")
@@ -263,19 +257,19 @@ All of these are helper functions that we defined earlier.
 In `let input = TxIn {...}` we are instantiating the input for the transaction we are constructing
 Inside the [`TxIn`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxIn.html) struct we are setting the following fields:
 
-- `previous_output` is the outpoint of the dummy UTXO we are spending; it is a [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) type.
-- `script_sig` is the script code required to spend an output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
+- `previous_output` is the outpoint of the dummy UTXO we are spending; it has the [`OutPoint`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.OutPoint.html) type.
+- `script_sig` is the script code required to spend an output; it has the [`ScriptBuf`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
    We are instantiating a new empty script with [`ScriptBuf::new()`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new).
-- `sequence` is the sequence number; it is a [`Sequence`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html) type.
+- `sequence` is the sequence number; it has the [`Sequence`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html) type.
    We are using the [`ENABLE_RBF_NO_LOCKTIME`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Sequence.html#associatedconstant.ENABLE_RBF_NO_LOCKTIME) constant.
-- `witness` is the witness stack; it is a [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html) type.
+- `witness` is the witness stack; has the [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html) type.
    We are using the [`default`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#impl-Default) method to create an empty witness that will be filled in later after signing.
    This is possible because `Witness` implements the [`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) trait.
 
 In `let spend = TxOut {...}` we are instantiating the spend output.
 Inside the [`TxOut`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.TxOut.html) struct we are setting the following fields:
 
-- `value` is the amount we are spending; it is a [`u64`](https://doc.rust-lang.org/std/primitive.u64.html) type.
+- `value` is the amount we are assigning to be spendable by given `script_pubkey`; it has the [`Amount`](https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Amount.html) type.
    We are using the `const SPEND_AMOUNT` that we defined earlier.
 - `script_pubkey` is the script code required to spend a P2TR output; it is a [`ScriptBuf`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html) type.
    We are using the [`script_pubkey`](https://docs.rs/bitcoin/0.32.0/bitcoin/address/struct.Address.html#method.script_pubkey) method to generate the script pubkey from the receivers address.
@@ -289,7 +283,7 @@ which generates P2TR-type of script pubkey.
 In `let unsigned_tx = Transaction {...}` we are instantiating the transaction we want to sign and broadcast using the [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html) struct.
 We set the following fields:
 
-- `version` is the transaction version; it is a [`i32`](https://doc.rust-lang.org/std/primitive.u32.html) type.
+- `version` is the transaction version; it has the [`transaction::Version`](https://docs.rs/bitcoin/0.32.2/bitcoin/blockdata/transaction/struct.Version.html) type.
    We are using version `2` which means that [BIP68](https://github.com/bitcoin/bips/blob/master/bip-0068.mediawiki) applies.
 - `lock_time` is the transaction lock time;
    it is a [`LockTime`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/locktime/absolute/enum.LockTime.html) enum.
@@ -312,13 +306,14 @@ This is a type that efficiently calculates [signature hash message](https://deve
 We are using the `new` method to instantiate the struct with the `unsigned_tx` that we defined earlier.
 `new` takes any `Borrow<Transaction>` as an argument.
 [`Borrow<T>`](https://doc.rust-lang.org/std/borrow/trait.Borrow.html) is a trait that allows us to pass either a reference to a `T` or a `T` itself.
-Hence, you can pass a `Transaction` or a `&Transaction` to `new`.
+Hence, you can pass a `Transaction`, a `&Transaction` or a smart pointer to `new`.
 
-`sighash_cache` is instantiated as mutable because we require a mutable reference when creating the sighash to sign using [`taproot_signature_hash`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.taproot_signature_hash) to it.
+`sighash_cache` is bound as mutable because we are updating it with computed values during signing.
+This is reflected by [`taproot_signature_hash`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.taproot_signature_hash) taking a mutable reference.
 This computes the [BIP341](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki) sighash for any flag type.
 It takes the following arguments:
 
-- `input_index` is the index of the input we are signing; it is a [`usize`](https://doc.rust-lang.org/std/primitive.usize.html) type.
+- `input_index` is the index of the input we are signing; it has the [`usize`](https://doc.rust-lang.org/std/primitive.usize.html) type.
    We are using `0` since we only have one input.
 - `&prevouts` is a reference to the [`Prevouts`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.Prevouts.html) enum that we defined earlier.
    This is used to reference the outputs of previous transactions and also used to calculate our transaction value.
@@ -330,19 +325,19 @@ It takes the following arguments:
    We are using the [`All`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/enum.TapSighashType.html#variant.All) variant,
    which indicates that the sighash will include all the inputs and outputs.
 
-Taproot signatures are generated by tweaking the private (and public) key(s).
-`let tweaked: TweakedKeypair = keypair.tap_tweak(&secp, None);` accomplishes this.
+Since Taproot outputs contain the tweaked key and `keypair` represents untweaked (internal) key we have to tweak the key before signing using
+`let tweaked: TweakedKeypair = keypair.tap_tweak(&secp, None);`.
 
 We create the message `msg` by converting the `sighash` to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) type.
 This is a the message that we will sign.
-The [Message::from](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method takes anything that implements the promises to be a thirty two byte hash i.e., 32 bytes that came from a cryptographically secure hashing algorithm.
+The [Message::from](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html#impl-From%3C%26%27_%20bitcoin%3A%3Ahashes%3A%3Asha256d%3A%3AHash%3E) method is available for types that are intended and safe for signing.
 
 We compute the signature `sig` by using the [`sign_schnorr`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Secp256k1.html#method.sign_schnorr) method.
 It takes a reference to a [`Message`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Message.html) and a reference to a [`Keypair`](https://docs.rs/secp256k1/0.29.0/secp256k1/struct.Keypair.html) as arguments,
 and returns a [`Signature`](https://docs.rs/secp256k1/0.29.0/secp256k1/ecdsa/struct.Signature.html) type.
 
-In the next step, we update the witness stack for the input we just signed by first converting the `sighash_cache` into a [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
-by using the [`into_transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction) method.
+In the next step, we update the witness stack for the input we just signed by first releasing the [`Transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html)
+from `sighash_cache` by using the [`into_transaction`](https://docs.rs/bitcoin/0.32.0/bitcoin/sighash/struct.SighashCache.html#method.into_transaction) method.
 We access the witness field of the first input with `tx.input[0].witness`.
 It is a [`Witness`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html) type.
 We use the [`push`](https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/witness/struct.Witness.html#method.push) method
