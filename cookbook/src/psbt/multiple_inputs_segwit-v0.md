@@ -33,16 +33,13 @@ First we'll need to import the following:
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
-use bitcoin::bip32::{ChildNumber, IntoDerivationPath, Fingerprint, Xpriv, Xpub};
+use bitcoin::bip32::{ChildNumber, Fingerprint, IntoDerivationPath as _, Xpriv, Xpub};
 use bitcoin::hashes::Hash;
 use bitcoin::locktime::absolute;
-use bitcoin::psbt::Input;
-use bitcoin::secp256k1::{self, Message, Secp256k1, Signing};
-use bitcoin::consensus;
-use bitcoin::transaction::{self, OutPoint, TxIn, TxOut};
+use bitcoin::secp256k1::{Secp256k1, Signing};
 use bitcoin::{
-    Address, Amount, EcdsaSighashType, Network, Psbt, ScriptBuf, Sequence,
-    Txid, WPubkeyHash, Witness, XOnlyPublicKey,
+    consensus, psbt, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt,
+    ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
 };
 ```
 
@@ -53,10 +50,9 @@ Here is the logic behind these imports:
 - `bitcoin::bip32` is used to derive keys according to [BIP 32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
 - `bitcoin::hashes::Hash` is used to hash data
 - `bitcoin::locktime::absolute` is used to create a locktime
-- `bitcoin::psbt` is used to construct and manipulate PSBTs
 - `bitcoin::secp256k1` is used to sign transactions
-- `bitcoin::sighash` is used to create SegWit V0 sighashes
 - `bitcoin::consensus` is used to serialize the final signed transaction to a raw transaction
+- `bitcoin::psbt` is used to construct and manipulate PSBTs
 - `bitcoin::transaction` and `bitcoin::{Address, Network, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness}` are used to construct transactions
 - `bitcoin::WPubkeyHash` is used to construct SegWit V0 inputs
 
@@ -204,14 +200,13 @@ while also extracting a transaction that spends the `p2wpkh`s unspent outputs:
 # use std::collections::BTreeMap;
 # use std::str::FromStr;
 # 
-# use bitcoin::bip32::{ChildNumber, IntoDerivationPath, Fingerprint, Xpriv, Xpub};
+# use bitcoin::bip32::{ChildNumber, Fingerprint, IntoDerivationPath as _, Xpriv, Xpub};
 # use bitcoin::hashes::Hash;
 # use bitcoin::locktime::absolute;
-# use bitcoin::psbt::{Input, PsbtSighashType};
 # use bitcoin::secp256k1::{Secp256k1, Signing};
 # use bitcoin::{
-#     consensus, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt, ScriptBuf, Sequence,
-#     Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
+#     consensus, psbt, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt,
+#     ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
 # };
 # 
 # const XPRIV: &str = "xprv9tuogRdb5YTgcL3P8Waj7REqDuQx4sXcodQaWTtEVFEp6yRKh1CjrWfXChnhgHeLDuXxo2auDZegMiVMGGxwxcrb2PmiGyCngLxvLeGsZRq";
@@ -379,14 +374,14 @@ fn main() {
         bip32_derivations.push(map);
     }
     psbt.inputs = vec![
-        Input {
+        psbt::Input {
             witness_utxo: Some(utxos[0].clone()),
             redeem_script: Some(ScriptBuf::new_p2wpkh(&wpkhs[0])),
             bip32_derivation: bip32_derivations[0].clone(),
             sighash_type: Some(ty),
             ..Default::default()
         },
-        Input {
+        psbt::Input {
             witness_utxo: Some(utxos[1].clone()),
             redeem_script: Some(ScriptBuf::new_p2wpkh(&wpkhs[1])),
             bip32_derivation: bip32_derivations[1].clone(),
