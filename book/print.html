@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="A cookbook for Rust Bitcoin development">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -31,15 +31,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -61,19 +63,16 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
             var sidebar = null;
             var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
@@ -83,45 +82,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li><li class="chapter-item expanded "><a href="psbt.html"><strong aria-hidden="true">3.</strong> Working with PSBTs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="psbt/multiple_inputs_segwit-v0.html"><strong aria-hidden="true">3.1.</strong> Constructing and Signing Multiple Inputs - SegWit V0</a></li><li class="chapter-item expanded "><a href="psbt/multiple_inputs_taproot.html"><strong aria-hidden="true">3.2.</strong> Constructing and Signing Multiple Inputs - Taproot</a></li></ol></li></ol>
-            </div>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
-
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -924,16 +903,13 @@ roles:</p>
 <pre><code class="language-rust">use std::collections::BTreeMap;
 use std::str::FromStr;
 
-use bitcoin::bip32::{ChildNumber, IntoDerivationPath, Fingerprint, Xpriv, Xpub};
+use bitcoin::bip32::{ChildNumber, Fingerprint, IntoDerivationPath as _, Xpriv, Xpub};
 use bitcoin::hashes::Hash;
 use bitcoin::locktime::absolute;
-use bitcoin::psbt::Input;
-use bitcoin::secp256k1::{self, Message, Secp256k1, Signing};
-use bitcoin::consensus;
-use bitcoin::transaction::{self, OutPoint, TxIn, TxOut};
+use bitcoin::secp256k1::{Secp256k1, Signing};
 use bitcoin::{
-    Address, Amount, EcdsaSighashType, Network, Psbt, ScriptBuf, Sequence,
-    Txid, WPubkeyHash, Witness, XOnlyPublicKey,
+    consensus, psbt, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt,
+    ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
 };</code></pre>
 <p>Here is the logic behind these imports:</p>
 <ul>
@@ -942,10 +918,9 @@ use bitcoin::{
 <li><code>bitcoin::bip32</code> is used to derive keys according to <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP 32</a></li>
 <li><code>bitcoin::hashes::Hash</code> is used to hash data</li>
 <li><code>bitcoin::locktime::absolute</code> is used to create a locktime</li>
-<li><code>bitcoin::psbt</code> is used to construct and manipulate PSBTs</li>
 <li><code>bitcoin::secp256k1</code> is used to sign transactions</li>
-<li><code>bitcoin::sighash</code> is used to create SegWit V0 sighashes</li>
 <li><code>bitcoin::consensus</code> is used to serialize the final signed transaction to a raw transaction</li>
+<li><code>bitcoin::psbt</code> is used to construct and manipulate PSBTs</li>
 <li><code>bitcoin::transaction</code> and <code>bitcoin::{Address, Network, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, Witness}</code> are used to construct transactions</li>
 <li><code>bitcoin::WPubkeyHash</code> is used to construct SegWit V0 inputs</li>
 </ul>
@@ -1080,14 +1055,13 @@ while also extracting a transaction that spends the <code>p2wpkh</code>s unspent
 <pre><code class="language-rust"><span class="boring">use std::collections::BTreeMap;
 </span><span class="boring">use std::str::FromStr;
 </span><span class="boring">
-</span><span class="boring">use bitcoin::bip32::{ChildNumber, IntoDerivationPath, Fingerprint, Xpriv, Xpub};
+</span><span class="boring">use bitcoin::bip32::{ChildNumber, Fingerprint, IntoDerivationPath as _, Xpriv, Xpub};
 </span><span class="boring">use bitcoin::hashes::Hash;
 </span><span class="boring">use bitcoin::locktime::absolute;
-</span><span class="boring">use bitcoin::psbt::{Input, PsbtSighashType};
 </span><span class="boring">use bitcoin::secp256k1::{Secp256k1, Signing};
 </span><span class="boring">use bitcoin::{
-</span><span class="boring">    consensus, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt, ScriptBuf, Sequence,
-</span><span class="boring">    Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
+</span><span class="boring">    consensus, psbt, transaction, Address, Amount, EcdsaSighashType, Network, OutPoint, Psbt,
+</span><span class="boring">    ScriptBuf, Sequence, Transaction, TxIn, TxOut, Txid, WPubkeyHash, Witness,
 </span><span class="boring">};
 </span><span class="boring">
 </span><span class="boring">const XPRIV: &amp;str = "xprv9tuogRdb5YTgcL3P8Waj7REqDuQx4sXcodQaWTtEVFEp6yRKh1CjrWfXChnhgHeLDuXxo2auDZegMiVMGGxwxcrb2PmiGyCngLxvLeGsZRq";
@@ -1255,14 +1229,14 @@ while also extracting a transaction that spends the <code>p2wpkh</code>s unspent
         bip32_derivations.push(map);
     }
     psbt.inputs = vec![
-        Input {
+        psbt::Input {
             witness_utxo: Some(utxos[0].clone()),
             redeem_script: Some(ScriptBuf::new_p2wpkh(&amp;wpkhs[0])),
             bip32_derivation: bip32_derivations[0].clone(),
             sighash_type: Some(ty),
             ..Default::default()
         },
-        Input {
+        psbt::Input {
             witness_utxo: Some(utxos[1].clone()),
             redeem_script: Some(ScriptBuf::new_p2wpkh(&amp;wpkhs[1])),
             bip32_derivation: bip32_derivations[1].clone(),
