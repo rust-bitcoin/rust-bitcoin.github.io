@@ -24,28 +24,41 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
     </head>
     <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
     <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +72,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,17 +86,20 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -109,13 +126,14 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -132,7 +150,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -184,9 +207,9 @@ const CHANGE_AMOUNT: Amount = Amount::from_sat(14_999_000); // 1000 sat fee.</co
 <ul>
 <li><code>DUMMY_UTXO_AMOUNT</code> is the amount of the dummy UTXO we will be spending</li>
 <li><code>SPEND_AMOUNT</code> is the amount we will be spending from the dummy UTXO</li>
-<li><code>CHANGE_AMOUNT</code><sup class="footnote-reference"><a href="#change">1</a></sup> is the amount we will be sending back to ourselves as change</li>
+<li><code>CHANGE_AMOUNT</code><sup class="footnote-reference" id="fr-change-1"><a href="#footnote-change">1</a></sup> is the amount we will be sending back to ourselves as change</li>
 </ul>
-<p>Before we can construct the transaction, we need to define some helper functions<sup class="footnote-reference"><a href="#expect">2</a></sup>:</p>
+<p>Before we can construct the transaction, we need to define some helper functions<sup class="footnote-reference" id="fr-expect-1"><a href="#footnote-expect">2</a></sup>:</p>
 <pre><code class="language-rust"><span class="boring">use bitcoin::secp256k1::{rand, Secp256k1, SecretKey, Signing};
 </span><span class="boring">use bitcoin::key::Keypair;
 </span>fn senders_keys&lt;C: Signing&gt;(secp: &amp;Secp256k1&lt;C&gt;) -&gt; Keypair {
@@ -195,7 +218,7 @@ const CHANGE_AMOUNT: Amount = Amount::from_sat(14_999_000); // 1000 sat fee.</co
 }</code></pre>
 <p><code>senders_keys</code> generates a random private key and derives the corresponding public key hash.
 This will be useful to mock a sender.
-In a real application these would be actual secrets<sup class="footnote-reference"><a href="#secp">3</a></sup>.
+In a real application these would be actual secrets<sup class="footnote-reference" id="fr-secp-1"><a href="#footnote-secp">3</a></sup>.
 We use the <code>SecretKey::new</code> method to generate a random private key <code>sk</code>.
 We then use the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html#method.from_secret_key"><code>Keypair::from_secret_key</code></a> method to instantiate a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/key/struct.Keypair.html"><code>Keypair</code></a> type,
 which is a data structure that holds a keypair consisting of a secret and a public key.
@@ -210,7 +233,7 @@ This is used to indicate that is an instance of <code>Secp256k1</code> and can b
 }</code></pre>
 <p><code>receivers_address</code> generates a receiver address.
 In a real application this would be the address of the receiver.
-We use the <code>parse</code> method on <code>&amp;str</code> to parse <code>"bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va"</code><sup class="footnote-reference"><a href="#arbitrary_address">4</a></sup> as an address.
+We use the <code>parse</code> method on <code>&amp;str</code> to parse <code>"bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va"</code><sup class="footnote-reference" id="fr-arbitrary_address-1"><a href="#footnote-arbitrary_address">4</a></sup> as an address.
 Note that <code>bc1p0dq0tzg2r780hldthn5mrznmpxsxc0jux5f20fwj0z3wqxxk6fpqm7q0va</code> is a <a href="https://bitcoinops.org/en/topics/bech32/">Bech32</a> address.
 This is an arbitrary, however valid, Bitcoin mainnet address.
 Bitcoin applications are usually configured with specific Bitcoin network at the start and use that.
@@ -398,7 +421,7 @@ We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/address/struct.
 This will lock the output to the receiver's address.</li>
 </ul>
 <p>In <code>let change = TxOut {...}</code> we are instantiating the change output.
-It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference"><a href="#spend">5</a></sup>.
+It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference" id="fr-spend-1"><a href="#footnote-spend">5</a></sup>.
 This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2tr"><code>ScriptBuf::new_p2tr(...)</code></a>,
 which generates P2TR-type of script pubkey.</p>
 <p>In <code>let unsigned_tx = Transaction {...}</code> we are instantiating the transaction we want to sign and broadcast using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a> struct.
@@ -462,28 +485,29 @@ It expects a single argument of type <code>AsRef&lt;[u8]&gt;</code> which is a r
 We are using the <a href="https://doc.rust-lang.org/std/convert/trait.AsRef.html"><code>as_ref</code></a> method to convert the signature <code>sig</code> to a byte slice.</p>
 <p>As the last step we print this to terminal using the <a href="https://doc.rust-lang.org/std/macro.println.html"><code>println!</code></a> macro.
 This transaction is now ready to be broadcast to the Bitcoin network.</p>
-<div class="footnote-definition" id="change"><sup class="footnote-definition-label">1</sup>
+<hr>
+<ol class="footnote-definition"><li id="footnote-change">
 <p>Please note that the <code>CHANGE_AMOUNT</code> is not the same as the <code>DUMMY_UTXO_AMOUNT</code> minus the <code>SPEND_AMOUNT</code>.
-This is due to the fact that we need to pay a fee for the transaction.</p>
-</div>
-<div class="footnote-definition" id="expect"><sup class="footnote-definition-label">2</sup>
+This is due to the fact that we need to pay a fee for the transaction. <a href="#fr-change-1">↩</a></p>
+</li>
+<li id="footnote-expect">
 <p>We will be unwrapping any <a href="https://doc.rust-lang.org/std/option"><code>Option&lt;T&gt;</code></a>/<a href="https://doc.rust-lang.org/std/result"><code>Result&lt;T, E&gt;</code></a>
-with the <code>expect</code> method.</p>
-</div>
-<div class="footnote-definition" id="secp"><sup class="footnote-definition-label">3</sup>
+with the <code>expect</code> method. <a href="#fr-expect-1">↩</a></p>
+</li>
+<li id="footnote-secp">
 <p>Under the hood we are using the <a href="https://github.com/rust-bitcoin/rust-secp256k1/"><code>secp256k1</code></a> crate to generate the key pair.
 <code>rust-secp256k1</code> is a wrapper around <a href="https://github.com/bitcoin-core/secp256k1">libsecp256k1</a>, a C
 library implementing various cryptographic functions using the <a href="https://www.secg.org/">SECG</a> curve
-<a href="https://en.bitcoin.it/wiki/Secp256k1">secp256k1</a>.</p>
-</div>
-<div class="footnote-definition" id="arbitrary_address"><sup class="footnote-definition-label">4</sup>
-<p>this is an arbitrary mainnet address from block 805222.</p>
-</div>
-<div class="footnote-definition" id="spend"><sup class="footnote-definition-label">5</sup>
+<a href="https://en.bitcoin.it/wiki/Secp256k1">secp256k1</a>. <a href="#fr-secp-1">↩</a></p>
+</li>
+<li id="footnote-arbitrary_address">
+<p>this is an arbitrary mainnet address from block 805222. <a href="#fr-arbitrary_address-1">↩</a></p>
+</li>
+<li id="footnote-spend">
 <p>And also we are locking the output to an address that we control:
-the <code>internal_key</code> public key hash that we generated earlier.</p>
-</div>
-
+the <code>internal_key</code> public key hash that we generated earlier. <a href="#fr-spend-1">↩</a></p>
+</li>
+</ol>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -530,6 +554,7 @@ the <code>internal_key</code> public key hash that we generated earlier.</p>
         <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>

@@ -10,7 +10,7 @@ class MDBookSidebarScrollbox extends HTMLElement {
     connectedCallback() {
         this.innerHTML = '<ol class="chapter"><li class="chapter-item expanded affix "><a href="intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="getting_started.html"><strong aria-hidden="true">1.</strong> Getting started</a></li><li class="chapter-item expanded "><a href="tx.html"><strong aria-hidden="true">2.</strong> Constructing and Signing Transactions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tx_segwit-v0.html"><strong aria-hidden="true">2.1.</strong> SegWit V0</a></li><li class="chapter-item expanded "><a href="tx_taproot.html"><strong aria-hidden="true">2.2.</strong> Taproot</a></li></ol></li><li class="chapter-item expanded "><a href="psbt.html"><strong aria-hidden="true">3.</strong> Working with PSBTs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="psbt/multiple_inputs_segwit-v0.html"><strong aria-hidden="true">3.1.</strong> Constructing and Signing Multiple Inputs - SegWit V0</a></li><li class="chapter-item expanded "><a href="psbt/multiple_inputs_taproot.html"><strong aria-hidden="true">3.2.</strong> Constructing and Signing Multiple Inputs - Taproot</a></li></ol></li></ol>';
         // Set the current, active page, and reveal it if it's hidden
-        let current_page = document.location.href.toString();
+        let current_page = document.location.href.toString().split("#")[0].split("?")[0];
         if (current_page.endsWith("/")) {
             current_page += "index.html";
         }

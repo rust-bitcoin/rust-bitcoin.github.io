@@ -24,28 +24,41 @@
         <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
-        <!-- Provide site root to javascript -->
+        <!-- Provide site root and default themes to javascript -->
         <script>
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
     </head>
     <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
     <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -59,7 +72,8 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
@@ -72,17 +86,20 @@
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -109,13 +126,14 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -132,7 +150,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -218,7 +241,7 @@ Since this is a mainnet example, we are using the path <code>m/84'/0'/0'</code>.
 <li><code>DUMMY_UTXO_AMOUNT_INPUT_1</code> is the amount of the dummy UTXO we will be spending from the first input.</li>
 <li><code>DUMMY_UTXO_AMOUNT_INPUT_2</code> is the amount of the dummy UTXO we will be spending from the second input.</li>
 <li><code>SPEND_AMOUNT</code> is the amount we will be spending from the dummy UTXO related to the first input.</li>
-<li><code>CHANGE_AMOUNT</code><sup class="footnote-reference"><a href="#change">1</a></sup> is the amount we will be sending back to ourselves as change.</li>
+<li><code>CHANGE_AMOUNT</code><sup class="footnote-reference" id="fr-change-1"><a href="#footnote-change">1</a></sup> is the amount we will be sending back to ourselves as change.</li>
 </ul>
 <p>Before we can construct the transaction, we need to define some helper functions:</p>
 <pre><code class="language-rust"><span class="boring">use std::collections::BTreeMap;
@@ -316,7 +339,7 @@ generic over the <a href="https://docs.rs/secp256k1/0.29.0/secp256k1/trait.Signi
 This is used to indicate that is an instance of <code>Secp256k1</code> and can be used for signing and other things.</p>
 <p><code>receivers_address</code> generates a receiver address.
 In a real application this would be the address of the receiver.
-We use the method <code>Address::from_str</code> to parse the string of addresses<sup class="footnote-reference"><a href="#arbitrary_address">2</a></sup> into an <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Address.html"><code>Address</code></a>.
+We use the method <code>Address::from_str</code> to parse the string of addresses<sup class="footnote-reference" id="fr-arbitrary_address-1"><a href="#footnote-arbitrary_address">2</a></sup> into an <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Address.html"><code>Address</code></a>.
 Hence, it is necessary to import the <code>std::str::FromStr</code> trait.
 This is an arbitrary, however valid, Bitcoin mainnet address.
 Hence we use the <code>require_network</code> method to ensure that the address is valid for mainnet.</p>
@@ -592,7 +615,7 @@ We are using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/address/struct.
 This will lock the output to the receiver's address.</li>
 </ul>
 <p>In <code>let change = TxOut {...}</code> we are instantiating the change output.
-It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference"><a href="#spend">3</a></sup>.
+It is very similar to the <code>spend</code> output, but we are now using the <code>const CHANGE_AMOUNT</code> that we defined earlier<sup class="footnote-reference" id="fr-spend-1"><a href="#footnote-spend">3</a></sup>.
 This is done by setting the <code>script_pubkey</code> field to <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/script/struct.ScriptBuf.html#method.new_p2wpkh"><code>ScriptBuf::new_p2wpkh(...)</code></a>,
 which generates P2WPKH-type of script pubkey.</p>
 <p>In <code>let unsigned_tx = Transaction {...}</code> we are instantiating the transaction we want to sign and broadcast using the <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/blockdata/transaction/struct.Transaction.html"><code>Transaction</code></a> struct.
@@ -659,18 +682,19 @@ It provides a
 <a href="https://docs.rs/miniscript/11.0.0/miniscript/psbt/trait.PsbtExt.html#tymethod.finalize_mut"><code>.finalize_mut</code></a>
 to a <a href="https://docs.rs/bitcoin/0.32.0/bitcoin/psbt/struct.Psbt.html"><code>Psbt</code></a> object,
 which takes in a mutable reference to <code>Psbt</code> and populates the <code>final_witness</code> and <code>final_scriptsig</code> for all inputs.</p>
-<div class="footnote-definition" id="change"><sup class="footnote-definition-label">1</sup>
+<hr>
+<ol class="footnote-definition"><li id="footnote-change">
 <p>Please note that the <code>CHANGE_AMOUNT</code> is not the same as the <code>DUMMY_UTXO_AMOUNT_INPUT_N</code>s minus the <code>SPEND_AMOUNT</code>.
-This is due to the fact that we need to pay a miner's fee for the transaction.</p>
-</div>
-<div class="footnote-definition" id="arbitrary_address"><sup class="footnote-definition-label">2</sup>
-<p>this is an arbitrary mainnet addresses from block 805222.</p>
-</div>
-<div class="footnote-definition" id="spend"><sup class="footnote-definition-label">3</sup>
+This is due to the fact that we need to pay a miner's fee for the transaction. <a href="#fr-change-1">↩</a></p>
+</li>
+<li id="footnote-arbitrary_address">
+<p>this is an arbitrary mainnet addresses from block 805222. <a href="#fr-arbitrary_address-1">↩</a></p>
+</li>
+<li id="footnote-spend">
 <p>And also we are locking the output to an address that we control:
-the <code>wpkh</code> public key hash that we generated earlier.</p>
-</div>
-
+the <code>wpkh</code> public key hash that we generated earlier. <a href="#fr-spend-1">↩</a></p>
+</li>
+</ol>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -717,6 +741,7 @@ the <code>wpkh</code> public key hash that we generated earlier.</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>
