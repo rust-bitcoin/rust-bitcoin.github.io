@@ -15,8 +15,8 @@ primitives. It is designed for Rust programs built to work with the Bitcoin netw
 The rust-bitcoin organization includes a number of repositories containing various Rust crates that
 you may find useful when writing Rust code that interacts with the Bitcoin network.
 
-- [rust-bitcoincore-rpc](https://github.com/rust-bitcoin/rust-bitcoincore-rpc): A client library for
-  the Bitcoin Core JSON-RPC API.
+- [corepc](https://github.com/rust-bitcoin/corepc): A set of crates for interacting with the Bitcoin
+  Core JSON-RPC API.
 
 - [rust-miniscript](https://github.com/rust-bitcoin/rust-miniscript): Miniscript is an alternative
   to Bitcoin Script. It can be efficiently and simply encoded as Script to ensure that it works on
