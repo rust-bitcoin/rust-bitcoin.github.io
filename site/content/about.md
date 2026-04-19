@@ -25,7 +25,7 @@ you may find useful when writing Rust code that interacts with the Bitcoin netwo
 - [rust-bitcoin](https://github.com/rust-bitcoin/rust-bitcoin): Your one-stop-shop for interacting
   with the Bitcoin network in Rust.
 
-- [bitcoin-hashes](https://github.com/rust-bitcoin/rust-bitcoin/tree/master/hashes): A simple,
+- [bitcoin_hashes](https://github.com/rust-bitcoin/rust-bitcoin/tree/master/hashes): A simple,
   no-dependency library which implements the hash functions needed by Bitcoin.
 
 - [rust-secp256k1](https://git.rust-bitcoin.org/rust-bitcoin/rust-secp256k1): Rust bindings for Pieter
