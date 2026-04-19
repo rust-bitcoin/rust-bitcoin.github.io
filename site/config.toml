@@ -33,6 +33,6 @@ name = "bitcoin"
 url = "https://github.com/rust-bitcoin/rust-bitcoin"
 
 [[params.social]]
-key = 1
+key = 2
 name = "miniscript"
 url = "https://github.com/rust-bitcoin/rust-miniscript"
