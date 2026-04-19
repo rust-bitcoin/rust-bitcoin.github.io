@@ -28,7 +28,7 @@ you may find useful when writing Rust code that interacts with the Bitcoin netwo
 - [bitcoin-hashes](https://github.com/rust-bitcoin/rust-bitcoin/tree/master/hashes): A simple,
   no-dependency library which implements the hash functions needed by Bitcoin.
 
-- [rust-secp256k1](https://github.com/rust-bitcoin/rust-secp256k1): Rust bindings for Pieter
+- [rust-secp256k1](https://git.rust-bitcoin.org/rust-bitcoin/rust-secp256k1): Rust bindings for Pieter
   Wuille's secp256k1 library, which is used for fast and accurate manipulation of signatures on the
   secp256k1 curve.
 

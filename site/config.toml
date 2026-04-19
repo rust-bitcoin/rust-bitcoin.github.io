@@ -25,7 +25,7 @@ footerHTML = 'License CC-01 , Built with <a href="https://gohugo.io" class="foot
 [[params.social]]
 key = 0
 name = "secp256k1"
-url = "https://github.com/rust-bitcoin/rust-secp256k1"
+url = "https://git.rust-bitcoin.org/rust-bitcoin/rust-secp256k1"
 
 [[params.social]]
 key = 1
