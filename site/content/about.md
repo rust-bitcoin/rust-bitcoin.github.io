@@ -15,8 +15,8 @@ primitives. It is designed for Rust programs built to work with the Bitcoin netw
 The rust-bitcoin organization includes a number of repositories containing various Rust crates that
 you may find useful when writing Rust code that interacts with the Bitcoin network.
 
-- [rust-bitcoincore-rpc](https://github.com/rust-bitcoin/rust-bitcoincore-rpc): A client library for
-  the Bitcoin Core JSON-RPC API.
+- [corepc](https://github.com/rust-bitcoin/corepc): A set of crates for interacting with the Bitcoin
+  Core JSON-RPC API.
 
 - [rust-miniscript](https://github.com/rust-bitcoin/rust-miniscript): Miniscript is an alternative
   to Bitcoin Script. It can be efficiently and simply encoded as Script to ensure that it works on
@@ -25,10 +25,10 @@ you may find useful when writing Rust code that interacts with the Bitcoin netwo
 - [rust-bitcoin](https://github.com/rust-bitcoin/rust-bitcoin): Your one-stop-shop for interacting
   with the Bitcoin network in Rust.
 
-- [bitcoin-hashes](https://github.com/rust-bitcoin/rust-bitcoin/tree/master/hashes): A simple,
+- [bitcoin_hashes](https://github.com/rust-bitcoin/rust-bitcoin/tree/master/hashes): A simple,
   no-dependency library which implements the hash functions needed by Bitcoin.
 
-- [rust-secp256k1](https://github.com/rust-bitcoin/rust-secp256k1): Rust bindings for Pieter
+- [rust-secp256k1](https://git.rust-bitcoin.org/rust-bitcoin/rust-secp256k1): Rust bindings for Pieter
   Wuille's secp256k1 library, which is used for fast and accurate manipulation of signatures on the
   secp256k1 curve.
 
